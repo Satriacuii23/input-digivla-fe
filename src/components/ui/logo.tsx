@@ -1,10 +1,13 @@
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
-const LOGO_SRC = '/images/digivla-logo.png'
+const LOGO_SRC = '/images/digivla-logo.png?v=transparent'
 
-/** Official logo asset: 1024 × 190 px */
-const LOGO_ASPECT = 1024 / 190
+/** Official logo asset: 1024 × 214 px (transparent PNG, with tagline) */
+const LOGO_ASPECT = 1024 / 214
+
+/** Left emblem occupies roughly a square matching logo height */
+const LOGO_ICON_WIDTH_RATIO = 214 / 1024
 
 function logoWidth(height: number) {
   return Math.round(height * LOGO_ASPECT)
@@ -12,14 +15,13 @@ function logoWidth(height: number) {
 
 interface LogoProps {
   height?: number
-  variant?: 'light' | 'dark'
   className?: string
 }
 
-export function DigivlaLogo({ height = 40, variant = 'dark', className }: LogoProps) {
+export function DigivlaLogo({ height = 40, className }: LogoProps) {
   return (
     <div className={cn('digivla-logo', className)}>
-      <LogoImage height={height} variant={variant} priority />
+      <LogoImage height={height} priority />
     </div>
   )
 }
@@ -28,12 +30,10 @@ export function LogoImage({
   height = 40,
   className,
   priority = false,
-  variant = 'dark',
 }: {
   height?: number
   className?: string
   priority?: boolean
-  variant?: 'light' | 'dark'
 }) {
   const width = logoWidth(height)
 
@@ -45,12 +45,12 @@ export function LogoImage({
       height={height}
       priority={priority}
       className={cn('digivla-logo-image', className)}
-      style={{ height, width, maxWidth: '100%' }}
+      style={{ height, width: 'auto', maxWidth: '100%' }}
     />
   )
 }
 
-/** Circular mark only — for collapsed sidebar */
+/** Circular emblem — collapsed sidebar */
 export function LogoMark({
   size = 36,
   className,
@@ -58,6 +58,8 @@ export function LogoMark({
   size?: number
   className?: string
 }) {
+  const clipWidth = Math.round(size * LOGO_ICON_WIDTH_RATIO * 5.2)
+
   return (
     <div
       className={cn('digivla-logo-mark', className)}
@@ -70,7 +72,7 @@ export function LogoMark({
         width={logoWidth(size)}
         height={size}
         className="digivla-logo-mark-image"
-        style={{ height: size, width: logoWidth(size) }}
+        style={{ height: size, width: clipWidth, maxWidth: 'none' }}
       />
     </div>
   )

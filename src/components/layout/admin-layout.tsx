@@ -353,7 +353,7 @@ function SidebarPanel({
       <div className={`digivla-sidebar-header${collapsed ? ' is-collapsed' : ''}`}>
         {!collapsed ? (
           <div className="digivla-sidebar-brand-block">
-            <DigivlaLogo height={32} />
+            <DigivlaLogo height={36} />
             <span className="digivla-sidebar-tagline">Media Operations Platform</span>
           </div>
         ) : (
