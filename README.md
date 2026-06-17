@@ -1,92 +1,45 @@
-# Digivla IDS V2 - Frontend Structure
+# Digivla IDS 2.0 — Frontend
 
-New frontend project using **Next.js 15** with **Mantine UI 7**.
+Web admin platform for **Digivla IDS** (TV, Radio, Online media operations).
 
-## Technology Stack
+**Repository:** `gitlab.digivla.id/support/input-digivla-2.0-frontend`
 
-- **Framework**: Next.js 15
-- **UI Library**: Mantine UI 7
-- **Icons**: Tabler Icons
-- **Date**: Day.js + Mantine Dates
+## Stack
 
-## Project Structure
+- **Next.js 15** (App Router)
+- **Ant Design** + custom Digivla theme
+- **TypeScript**
+- BFF API routes → backend FastAPI
 
-```
-Frontend/V2/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── api/               # API routes (proxy to backend)
-│   │   │   └── auth/         # Authentication endpoints
-│   │   ├── login/            # Login page
-│   │   ├── (dashboard)/      # Dashboard routes (with layout)
-│   │   │   ├── media/        # Media management
-│   │   │   │   ├── list/     # Media list page
-│   │   │   │   └── add/      # Add media page
-│   │   │   ├── tv/           # TV articles
-│   │   │   │   ├── list/     # TV list page
-│   │   │   │   └── upload/   # TV upload page
-│   │   │   ├── radio/        # Radio articles
-│   │   │   │   ├── list/     # Radio list page
-│   │   │   │   └── upload/   # Radio upload page
-│   │   │   ├── online/       # Online articles
-│   │   │   │   ├── list/     # Online list page
-│   │   │   │   └── upload/   # Online upload page
-│   │   │   ├── page.tsx      # Dashboard overview
-│   │   │   └── layout.tsx    # Dashboard layout wrapper
-│   │   ├── layout.tsx        # Root layout
-│   │   └── page.tsx          # Root redirect
-│   │
-│   ├── components/            # React components
-│   │   └── layout/           # Layout components
-│   │       └── dashboard-layout.tsx
-│   │
-│   └── lib/                   # Utilities
-│       ├── api/              # API client
-│       │   └── client.ts
-│       ├── hooks/            # Custom hooks
-│       └── types/           # TypeScript types
-│
-├── package.json
-├── tsconfig.json
-├── next.config.mjs
-└── postcss.config.cjs
-```
-
-## Routes
-
-| Route | Description |
-|-------|-------------|
-| `/login` | Login page |
-| `/dashboard` | Dashboard overview |
-| `/media/list` | Media list |
-| `/media/add` | Add new media |
-| `/tv/list` | TV articles list |
-| `/tv/upload` | Upload TV article |
-| `/radio/list` | Radio articles list |
-| `/radio/upload` | Upload Radio article |
-| `/online/list` | Online articles list |
-| `/online/upload` | Upload Online article |
-
-## Commands
+## Quick Start
 
 ```bash
-# Install dependencies
-cd Frontend/V2
 npm install
-
-# Development (port 3002)
-npm run dev
-
-# Build
-npm run build
-
-# Type check
-npm run typecheck
+cp .env.example .env.local   # set BACKEND_API_URL
+npm run dev                  # http://localhost:3005
 ```
 
-## Design Guidelines
+## Environment
 
-- Clean, simple, informative design
-- Professional and modern without gradient colors
-- Color palette: Blues, greens, oranges for type differentiation
-- Mantine UI components with minimal custom styling
+| Variable | Description |
+|----------|-------------|
+| `BACKEND_API_URL` | Backend API (e.g. `http://192.168.100.50:8005`) |
+| `JWT_SECRET_KEY` | Must match backend for cookie/session |
+
+## Features
+
+- RBAC sidebar (superadmin, admin, staff, analis)
+- Dashboard, Media, TV / Radio / Online articles
+- Quality Control, User Management, Tools (Media Reach)
+
+## Production
+
+```bash
+npm run build
+npm run start   # port 3005, host 0.0.0.0
+```
+
+## Related repos
+
+- Backend: `support/input-digivla-2.0-backend`
+- Mobile: Flutter app (`digivla_mobile`)
