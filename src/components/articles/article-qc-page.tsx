@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   Form,
+  Grid,
   Input,
   Segmented,
   Select,
@@ -37,6 +38,7 @@ import {
   getOnlineArticleTableScrollX,
 } from '@/components/articles/online-article-list-columns'
 import { ArticleQcEditDrawer, ArticleQcPreviewDrawer, OnlineArticleQcEditDrawer, OnlineArticleQcPreviewDrawer } from '@/components/articles/article-qc-drawers'
+import { ArticleDeleteDrawer } from '@/components/articles/article-list-drawers'
 import { fetchOnlineMediaOptions } from '@/lib/api/online-media'
 
 interface MediaOption {
@@ -95,6 +97,8 @@ function mapBroadcastRow(raw: Record<string, unknown>): ArticleRow {
 export function ArticleQcPage({ config }: { config: ArticleQcPageConfig }) {
   const { message } = App.useApp()
   const [form] = Form.useForm()
+  const screens = Grid.useBreakpoint()
+  const isMobile = !screens.md
 
   const [articles, setArticles] = useState<(ArticleRow | OnlineArticleRow)[]>([])
   const [loading, setLoading] = useState(true)
@@ -110,6 +114,10 @@ export function ArticleQcPage({ config }: { config: ArticleQcPageConfig }) {
   const [editOpen, setEditOpen] = useState(false)
   const [editArticle, setEditArticle] = useState<ArticleRow | OnlineArticleRow | null>(null)
   const [editLoading, setEditLoading] = useState(false)
+
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<ArticleRow | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   const uploadRange = useMemo(() => getQcUploadDateRange(uploadPeriod), [uploadPeriod])
 
@@ -273,6 +281,36 @@ export function ArticleQcPage({ config }: { config: ArticleQcPageConfig }) {
     }
   }
 
+  const confirmDelete = async () => {
+    if (!deleteTarget) return
+    setDeleteLoading(true)
+    try {
+      const res = await fetch(`${config.apiPath}/${deleteTarget.article_id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      })
+      if (res.ok) {
+        message.success('Article deleted successfully')
+        setDeleteOpen(false)
+        setDeleteTarget(null)
+        fetchArticles(pagination.page)
+      } else if (res.status === 404) {
+        message.info('Article no longer exists')
+        setDeleteOpen(false)
+        setDeleteTarget(null)
+        fetchArticles(pagination.page)
+      } else if (res.status === 403) {
+        message.error('Only admins can delete articles')
+      } else {
+        message.error('Unable to delete article')
+      }
+    } catch {
+      message.error('An error occurred while deleting')
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
   const clearFilters = () => {
     setSearch('')
     setSelectedMedia(null)
@@ -288,6 +326,10 @@ export function ArticleQcPage({ config }: { config: ArticleQcPageConfig }) {
         editAriaLabel: 'Quality control edit',
         onPreview: openPreview,
         onEdit: openQcEdit,
+        onDelete: (article) => {
+          setDeleteTarget(article)
+          setDeleteOpen(true)
+        },
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [search],
@@ -300,6 +342,10 @@ export function ArticleQcPage({ config }: { config: ArticleQcPageConfig }) {
         editAriaLabel: 'Quality control edit',
         onPreview: openPreview,
         onEdit: openQcEdit,
+        onDelete: (article) => {
+          setDeleteTarget(article as unknown as ArticleRow)
+          setDeleteOpen(true)
+        },
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [search],
@@ -469,6 +515,19 @@ export function ArticleQcPage({ config }: { config: ArticleQcPageConfig }) {
           onSave={handleQcUpdate}
         />
       )}
+
+      <ArticleDeleteDrawer
+        open={deleteOpen}
+        article={deleteTarget}
+        width={isMobile ? '100%' : 440}
+        title={`Delete ${config.breadcrumbLabel} Article`}
+        loading={deleteLoading}
+        onClose={() => {
+          setDeleteOpen(false)
+          setDeleteTarget(null)
+        }}
+        onConfirm={confirmDelete}
+      />
     </>
   )
 }

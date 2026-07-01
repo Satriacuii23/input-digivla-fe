@@ -5,7 +5,6 @@ import dayjs from 'dayjs'
 import {
   Alert,
   Button,
-  Card,
   Col,
   DatePicker,
   Drawer,
@@ -43,7 +42,7 @@ interface QcMetaItem {
 }
 
 interface QcTopDrawerShellProps {
-  title: string
+  title: ReactNode
   open: boolean
   variant: 'preview' | 'edit'
   loading?: boolean
@@ -91,7 +90,7 @@ function QcTopDrawerFooter({
   isMobile: boolean
 }) {
   return (
-    <div className={`digivla-qc-top-drawer-footer${isMobile ? ' digivla-qc-top-drawer-footer--stacked' : ''}`}>
+    <div className={`digivla-qc-top-drawer-footer${isMobile ? ' digivla-qc-top-drawer-footer--stacked' : ''}`} style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, borderTop: '1px solid #f1f5f9', padding: '16px 24px' }}>
       {children}
     </div>
   )
@@ -107,25 +106,25 @@ function QcDrawerHero({
   metaItems: QcMetaItem[]
 }) {
   return (
-    <div className="digivla-article-drawer-hero digivla-qc-drawer-hero">
-      <Text type="secondary" className="digivla-article-drawer-eyebrow">
+    <div style={{ padding: '16px 20px', background: '#f8fafc', borderRadius: 8, borderLeft: '4px solid #3b82f6', marginBottom: 20 }}>
+      <Text type="secondary" style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', marginBottom: 6 }}>
         {eyebrow}
       </Text>
-      <Paragraph className="digivla-article-drawer-hero-title">{title}</Paragraph>
-      <ul className="digivla-qc-drawer-meta-list">
+      <Paragraph style={{ fontSize: 18, fontWeight: 600, color: '#0f172a', margin: '0 0 12px 0', lineHeight: 1.45 }}>{title}</Paragraph>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px', fontSize: 13, borderTop: '1px dashed #e2e8f0', paddingTop: 10 }}>
         {metaItems.map((item) => (
-          <li key={item.label} className="digivla-qc-drawer-meta-item">
-            <span className="digivla-qc-drawer-meta-label">{item.label}</span>
-            <span className="digivla-qc-drawer-meta-value">{item.value}</span>
-          </li>
+          <div key={item.label}>
+            <span style={{ color: '#64748b', marginRight: 4 }}>{item.label}:</span>
+            <span style={{ color: '#334155', fontWeight: 500 }}>{item.value}</span>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   )
 }
 
 interface QcEditDrawerShellProps {
-  title: string
+  title: ReactNode
   open: boolean
   loading: boolean
   onClose: () => void
@@ -164,34 +163,34 @@ function QcEditDrawerShell({
       onClose={onClose}
       footer={
         <QcTopDrawerFooter isMobile={isMobile}>
-          <Button block={isMobile} icon={<CloseOutlined />} onClick={onClose} disabled={loading}>
+          <Button icon={<CloseOutlined />} onClick={onClose} disabled={loading}>
             Cancel
           </Button>
           <Button
-            block={isMobile}
             type="primary"
             icon={<SaveOutlined />}
             loading={loading}
             onClick={onSave}
+            style={{ minWidth: 140 }}
           >
             Save QC Changes
           </Button>
         </QcTopDrawerFooter>
       }
     >
-      <div className="digivla-qc-top-drawer-body">
+      <div className="digivla-qc-top-drawer-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <QcDrawerHero eyebrow={heroEyebrow} title={heroTitle} metaItems={metaItems} />
 
         <Alert
           type="info"
           showIcon
-          title="Quality control review"
+          message={<span style={{ fontWeight: 600 }}>Quality Control Review</span>}
           description={
             isMobile
               ? 'Review reference data, then update the form below.'
               : alertDescription
           }
-          className="digivla-article-drawer-alert digivla-qc-edit-alert"
+          style={{ borderRadius: 8 }}
         />
 
         <Row
@@ -267,24 +266,35 @@ export function ArticleQcPreviewDrawer({
 
   return (
     <QcTopDrawerShell
-      title={`Preview — ${mediaLabel} Article`}
+      title={
+        article ? (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingRight: 24 }}>
+            <span style={{ fontWeight: 600, color: '#0f172a', fontSize: 16 }}>Preview — {mediaLabel} Article</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: '#475569', background: '#f1f5f9', padding: '4px 10px', borderRadius: 6 }}>
+              ID: {formatArticleIdDisplay(article.article_id)}
+            </span>
+          </div>
+        ) : (
+          `Preview — ${mediaLabel} Article`
+        )
+      }
       open={open}
       variant="preview"
       onClose={onClose}
       footer={
         article ? (
           <QcTopDrawerFooter isMobile={isMobile}>
-            <Button block={isMobile} icon={<CloseOutlined />} onClick={onClose}>
+            <Button icon={<CloseOutlined />} onClick={onClose}>
               Close
             </Button>
             <Button
-              block={isMobile}
               type="primary"
               icon={<EditOutlined />}
               onClick={() => {
                 onClose()
                 onEdit(article)
               }}
+              style={{ minWidth: 120 }}
             >
               {editButtonLabel}
             </Button>
@@ -293,7 +303,7 @@ export function ArticleQcPreviewDrawer({
       }
     >
       {article ? (
-        <div className="digivla-qc-top-drawer-body">
+        <div className="digivla-qc-top-drawer-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <QcDrawerHero
             eyebrow={`${mediaLabel} · Article ${formatArticleIdDisplay(article.article_id)}`}
             title={article.title}
@@ -302,50 +312,55 @@ export function ArticleQcPreviewDrawer({
 
           <Row gutter={[isMobile ? 12 : 20, isMobile ? 12 : 20]} className="digivla-qc-preview-layout">
             <Col xs={24} lg={hasMedia ? 14 : 24} xl={hasMedia ? 15 : 24}>
-              <div className="digivla-qc-preview-main">
-                <Card size="small" title="Article Information" className="digivla-drawer-card digivla-qc-panel-card">
+              <div className="digivla-qc-preview-main" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
+                  <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Article Information
+                  </h3>
                   <ArticleMetaDescriptions article={article} />
-                </Card>
+                </div>
 
                 {article.content?.trim() ? (
-                  <Card size="small" title="Content" className="digivla-drawer-card digivla-qc-panel-card">
-                    <Paragraph className="digivla-article-drawer-content digivla-qc-preview-content">
+                  <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+                    <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Content
+                    </h3>
+                    <Paragraph style={{ fontSize: 14, lineHeight: '1.7', color: '#1e293b', whiteSpace: 'pre-wrap', margin: 0 }}>
                       <HighlightSearchText text={article.content} keyword={searchKeyword} />
                     </Paragraph>
-                  </Card>
+                  </div>
                 ) : null}
               </div>
             </Col>
 
             {hasMedia ? (
               <Col xs={24} lg={10} xl={9}>
-                <Card
-                  size="small"
-                  title={fileLabel}
-                  className="digivla-drawer-card digivla-drawer-card-media digivla-qc-panel-card digivla-qc-preview-media-card"
-                >
+                <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
+                  <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {fileLabel}
+                  </h3>
                   <video
                     controls
-                    className="digivla-article-media-player digivla-qc-preview-media-player"
+                    style={{ width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', background: '#000', maxHeight: 380, boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}
                     src={fileeToPublicUrl(article.filee) ?? undefined}
                   >
                     Your browser does not support the media tag.
                   </video>
                   {fileeToPublicUrl(article.filee) ? (
-                    <div className="digivla-article-file-actions">
+                    <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
                       <Button
                         type="link"
                         icon={<LinkOutlined />}
                         href={fileeToPublicUrl(article.filee)!}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="digivla-article-open-file"
+                        style={{ padding: 0, fontSize: 13 }}
                       >
                         Open file in new tab
                       </Button>
                     </div>
                   ) : null}
-                </Card>
+                </div>
               </Col>
             ) : null}
           </Row>
@@ -380,24 +395,35 @@ export function OnlineArticleQcPreviewDrawer({
 
   return (
     <QcTopDrawerShell
-      title="Preview — Online Article"
+      title={
+        article ? (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingRight: 24 }}>
+            <span style={{ fontWeight: 600, color: '#0f172a', fontSize: 16 }}>Preview — Online Article</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: '#475569', background: '#f1f5f9', padding: '4px 10px', borderRadius: 6 }}>
+              ID: {formatArticleIdDisplay(article.article_id)}
+            </span>
+          </div>
+        ) : (
+          "Preview — Online Article"
+        )
+      }
       open={open}
       variant="preview"
       onClose={onClose}
       footer={
         article ? (
           <QcTopDrawerFooter isMobile={isMobile}>
-            <Button block={isMobile} icon={<CloseOutlined />} onClick={onClose}>
+            <Button icon={<CloseOutlined />} onClick={onClose}>
               Close
             </Button>
             <Button
-              block={isMobile}
               type="primary"
               icon={<EditOutlined />}
               onClick={() => {
                 onClose()
                 onEdit(article)
               }}
+              style={{ minWidth: 120 }}
             >
               {editButtonLabel}
             </Button>
@@ -406,7 +432,7 @@ export function OnlineArticleQcPreviewDrawer({
       }
     >
       {article ? (
-        <div className="digivla-qc-top-drawer-body">
+        <div className="digivla-qc-top-drawer-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <QcDrawerHero
             eyebrow={`Online · Article ${formatArticleIdDisplay(article.article_id)}`}
             title={article.title}
@@ -415,24 +441,33 @@ export function OnlineArticleQcPreviewDrawer({
 
           <Row gutter={[isMobile ? 12 : 20, isMobile ? 12 : 20]} className="digivla-qc-preview-layout">
             <Col xs={24} lg={hasFile ? 14 : 24} xl={hasFile ? 15 : 24}>
-              <div className="digivla-qc-preview-main">
-                <Card size="small" title="Article Information" className="digivla-drawer-card digivla-qc-panel-card">
+              <div className="digivla-qc-preview-main" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
+                  <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Article Information
+                  </h3>
                   <OnlineArticleMetaDescriptions article={article} />
-                </Card>
+                </div>
 
                 {article.content?.trim() ? (
-                  <Card size="small" title="Content" className="digivla-drawer-card digivla-qc-panel-card">
-                    <Paragraph className="digivla-article-drawer-content digivla-qc-preview-content">
+                  <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+                    <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Content
+                    </h3>
+                    <Paragraph style={{ fontSize: 14, lineHeight: '1.7', color: '#1e293b', whiteSpace: 'pre-wrap', margin: 0 }}>
                       <HighlightSearchText text={article.content} keyword={searchKeyword} />
                     </Paragraph>
-                  </Card>
+                  </div>
                 ) : null}
               </div>
             </Col>
 
             {hasFile ? (
               <Col xs={24} lg={10} xl={9}>
-                <Card size="small" title="Article File / URL" className="digivla-drawer-card digivla-qc-panel-card">
+                <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
+                  <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Article File / URL
+                  </h3>
                   {fileHref ? (
                     <Button
                       type="link"
@@ -440,14 +475,14 @@ export function OnlineArticleQcPreviewDrawer({
                       href={fileHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="digivla-qc-edit-url-link"
+                      style={{ padding: 0, fontSize: 13 }}
                     >
                       {fileLabel}
                     </Button>
                   ) : (
-                    <Text className="digivla-table-file-link">{fileLabel}</Text>
+                    <Text style={{ fontSize: 13, color: '#475569' }}>{fileLabel}</Text>
                   )}
-                </Card>
+                </div>
               </Col>
             ) : null}
           </Row>
@@ -498,7 +533,14 @@ export function ArticleQcEditDrawer({
 
   return (
     <QcEditDrawerShell
-      title={`QC — Edit ${mediaLabel} Article`}
+      title={
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingRight: 24 }}>
+          <span style={{ fontWeight: 600, color: '#0f172a', fontSize: 16 }}>QC — Edit {mediaLabel} Article</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: '#475569', background: '#f1f5f9', padding: '4px 10px', borderRadius: 6 }}>
+            ID: {formatArticleIdDisplay(article.article_id)}
+          </span>
+        </div>
+      }
       open={open}
       loading={loading}
       onClose={onClose}
@@ -508,108 +550,118 @@ export function ArticleQcEditDrawer({
       heroTitle={article.title}
       metaItems={buildBroadcastMetaItems(article)}
       referencePanel={
-        <>
-          <Card size="small" title="Reference" className="digivla-drawer-card digivla-qc-panel-card">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Reference Metadata
+            </h3>
             <ArticleMetaDescriptions article={article} />
-          </Card>
+          </div>
 
           {article.content?.trim() ? (
-            <Card size="small" title="Current Content" className="digivla-drawer-card digivla-qc-panel-card">
-              <Paragraph className="digivla-article-drawer-content digivla-qc-edit-content-preview">
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Current Content
+              </h3>
+              <Paragraph style={{ fontSize: 13, lineHeight: '1.6', color: '#475569', whiteSpace: 'pre-wrap', margin: 0, maxHeight: 300, overflowY: 'auto' }}>
                 {article.content}
               </Paragraph>
-            </Card>
+            </div>
           ) : null}
 
           {article.filee ? (
-            <Card
-              size="small"
-              title={fileLabel}
-              className="digivla-drawer-card digivla-drawer-card-media digivla-qc-panel-card digivla-qc-edit-media-card"
-            >
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                {fileLabel}
+              </h3>
               <video
                 controls
-                className="digivla-article-media-player digivla-qc-edit-media-player"
+                style={{ width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', background: '#000', maxHeight: 240 }}
                 src={fileUrl ?? undefined}
               >
                 Your browser does not support the media tag.
               </video>
               {fileUrl ? (
-                <div className="digivla-article-file-actions">
+                <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
                     type="link"
                     icon={<LinkOutlined />}
                     href={fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="digivla-article-open-file"
+                    style={{ padding: 0, fontSize: 13 }}
                   >
                     Open file in new tab
                   </Button>
                 </div>
               ) : null}
-            </Card>
+            </div>
           ) : null}
-        </>
+        </div>
       }
       formPanel={
-        <Form form={form} layout="vertical" requiredMark="optional" className="digivla-drawer-form digivla-qc-edit-form">
-          <Card size="small" title="Article Information" className="digivla-drawer-card digivla-qc-panel-card digivla-qc-edit-form-main">
-            <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Title is required' }]}>
-              <Input placeholder="Enter article title" size="large" />
+        <Form form={form} layout="vertical" requiredMark="optional" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+              Article Details
+            </h3>
+            <Form.Item name="title" label={<span style={{ fontWeight: 500, color: '#334155' }}>Title</span>} rules={[{ required: true, message: 'Title is required' }]}>
+              <Input placeholder="Enter article title" style={{ borderRadius: 6 }} />
             </Form.Item>
-            <Form.Item name="content" label="Content" className="digivla-qc-edit-content-item">
+            <Form.Item name="content" label={<span style={{ fontWeight: 500, color: '#334155' }}>Content</span>} style={{ marginBottom: 0 }}>
               <Input.TextArea
                 autoSize={contentTextAreaProps}
                 placeholder="Enter article content"
                 showCount
                 maxLength={5000}
-                className="digivla-qc-edit-content-field"
+                style={{ borderRadius: 6 }}
               />
             </Form.Item>
-          </Card>
+          </div>
 
-          <Card size="small" title="Broadcast Details" className="digivla-drawer-card digivla-qc-panel-card digivla-qc-edit-form-details">
+          <div>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+              Broadcast Details
+            </h3>
             <Row gutter={[16, 0]}>
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="datee"
-                  label="Broadcast Date"
+                  label={<span style={{ fontWeight: 500, color: '#334155' }}>Broadcast Date</span>}
                   rules={[{ required: true, message: 'Date is required' }]}
                 >
                   <DatePicker
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', borderRadius: 6 }}
                     format="DD/MM/YYYY"
                     disabledDate={(current) => current && current > dayjs().endOf('day')}
                   />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12}>
-                <Form.Item name="journalist" label="Anchor / Journalist">
-                  <Input placeholder="Enter anchor or journalist name" />
+                <Form.Item name="journalist" label={<span style={{ fontWeight: 500, color: '#334155' }}>Anchor / Journalist</span>}>
+                  <Input placeholder="Enter anchor or journalist name" style={{ borderRadius: 6 }} />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12}>
-                <Form.Item name="timee" label="Time (WIB)" extra="24 jam · UTC+7">
+                <Form.Item name="timee" label={<span style={{ fontWeight: 500, color: '#334155' }}>Time (WIB)</span>} extra={<span style={{ fontSize: 11, color: '#94a3b8' }}>24-hour format</span>}>
                   <TimePicker
                     format="HH:mm"
                     use12Hours={false}
                     inputReadOnly
                     placeholder="HH:mm"
-                    className="digivla-wib-time-picker"
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', borderRadius: 6 }}
                     needConfirm={false}
                     showNow={false}
                   />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12}>
-                <Form.Item name="duration" label="Duration (seconds)" style={{ marginBottom: 0 }}>
-                  <Input placeholder="e.g. 163" inputMode="numeric" />
+                <Form.Item name="duration" label={<span style={{ fontWeight: 500, color: '#334155' }}>Duration (seconds)</span>} style={{ marginBottom: 0 }}>
+                  <Input placeholder="e.g. 163" inputMode="numeric" style={{ borderRadius: 6 }} />
                 </Form.Item>
               </Col>
             </Row>
-          </Card>
+          </div>
         </Form>
       }
     />
@@ -653,7 +705,14 @@ export function OnlineArticleQcEditDrawer({
 
   return (
     <QcEditDrawerShell
-      title="QC — Edit Online Article"
+      title={
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingRight: 24 }}>
+          <span style={{ fontWeight: 600, color: '#0f172a', fontSize: 16 }}>QC — Edit Online Article</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: '#475569', background: '#f1f5f9', padding: '4px 10px', borderRadius: 6 }}>
+            ID: {formatArticleIdDisplay(article.article_id)}
+          </span>
+        </div>
+      }
       open={open}
       loading={loading}
       onClose={onClose}
@@ -663,84 +722,99 @@ export function OnlineArticleQcEditDrawer({
       heroTitle={article.title}
       metaItems={buildOnlineMetaItems(article)}
       referencePanel={
-        <>
-          <Card size="small" title="Reference" className="digivla-drawer-card digivla-qc-panel-card">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Reference Metadata
+            </h3>
             <OnlineArticleMetaDescriptions article={article} />
-          </Card>
+          </div>
 
           {article.content?.trim() ? (
-            <Card size="small" title="Current Content" className="digivla-drawer-card digivla-qc-panel-card">
-              <Paragraph className="digivla-article-drawer-content digivla-qc-edit-content-preview">
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Current Content
+              </h3>
+              <Paragraph style={{ fontSize: 13, lineHeight: '1.6', color: '#475569', whiteSpace: 'pre-wrap', margin: 0, maxHeight: 300, overflowY: 'auto' }}>
                 {article.content}
               </Paragraph>
-            </Card>
+            </div>
           ) : null}
 
           {fileUrl ? (
-            <Card size="small" title="Link / File" className="digivla-drawer-card digivla-qc-panel-card">
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Link / File
+              </h3>
               <Button
                 type="link"
                 icon={<LinkOutlined />}
                 href={fileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="digivla-qc-edit-url-link"
+                style={{ padding: 0, fontSize: 13 }}
               >
                 {fileUrl}
               </Button>
-            </Card>
+            </div>
           ) : null}
-        </>
+        </div>
       }
       formPanel={
-        <Form form={form} layout="vertical" requiredMark="optional" className="digivla-drawer-form digivla-qc-edit-form">
-          <Card size="small" title="Article Information" className="digivla-drawer-card digivla-qc-panel-card digivla-qc-edit-form-main">
-            <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Title is required' }]}>
-              <Input placeholder="Enter article title" size="large" />
+        <Form form={form} layout="vertical" requiredMark="optional" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+              Article Details
+            </h3>
+            <Form.Item name="title" label={<span style={{ fontWeight: 500, color: '#334155' }}>Title</span>} rules={[{ required: true, message: 'Title is required' }]}>
+              <Input placeholder="Enter article title" style={{ borderRadius: 6 }} />
             </Form.Item>
-            <Form.Item name="content" label="Content" className="digivla-qc-edit-content-item">
+            <Form.Item name="content" label={<span style={{ fontWeight: 500, color: '#334155' }}>Content</span>}>
               <Input.TextArea
                 autoSize={contentTextAreaProps}
                 placeholder="Enter article content"
                 showCount
                 maxLength={5000}
-                className="digivla-qc-edit-content-field"
+                style={{ borderRadius: 6 }}
               />
             </Form.Item>
-            <Form.Item name="journalist" label="Journalist">
-              <Input placeholder="Enter journalist name" />
+            <Form.Item name="journalist" label={<span style={{ fontWeight: 500, color: '#334155' }}>Journalist</span>}>
+              <Input placeholder="Enter journalist name" style={{ borderRadius: 6 }} />
             </Form.Item>
-            <Form.Item name="url" label="Link URL" extra="Stored in file_pdf when saved">
-              <Input placeholder="https://..." />
+            <Form.Item name="url" label={<span style={{ fontWeight: 500, color: '#334155' }}>Link URL</span>} extra={<span style={{ fontSize: 11, color: '#94a3b8' }}>Stored in file_pdf when saved</span>}>
+              <Input placeholder="https://..." style={{ borderRadius: 6 }} />
             </Form.Item>
             <Row gutter={[16, 0]}>
               <Col xs={24} sm={12}>
-                <Form.Item name="pages" label="Pages">
-                  <InputNumber style={{ width: '100%' }} min={0} />
+                <Form.Item name="pages" label={<span style={{ fontWeight: 500, color: '#334155' }}>Pages</span>}>
+                  <InputNumber style={{ width: '100%', borderRadius: 6 }} min={0} />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12}>
-                <Form.Item name="mm_col" label="MM Column" style={{ marginBottom: 0 }}>
-                  <InputNumber style={{ width: '100%' }} min={0} step={0.01} />
+                <Form.Item name="mm_col" label={<span style={{ fontWeight: 500, color: '#334155' }}>MM Column</span>} style={{ marginBottom: 0 }}>
+                  <InputNumber style={{ width: '100%', borderRadius: 6 }} min={0} step={0.01} />
                 </Form.Item>
               </Col>
             </Row>
-          </Card>
+          </div>
 
-          <Card size="small" title="Publication Details" className="digivla-drawer-card digivla-qc-panel-card digivla-qc-edit-form-details">
+          <div>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
+              Publication details
+            </h3>
             <Form.Item
               name="datee"
-              label="Publication Date"
+              label={<span style={{ fontWeight: 500, color: '#334155' }}>Publication Date</span>}
               rules={[{ required: true, message: 'Date is required' }]}
               style={{ marginBottom: 0 }}
             >
               <DatePicker
-                style={{ width: '100%' }}
+                style={{ width: '100%', borderRadius: 6 }}
                 format="DD/MM/YYYY"
                 disabledDate={(current) => current && current > dayjs().endOf('day')}
               />
             </Form.Item>
-          </Card>
+          </div>
         </Form>
       }
     />
