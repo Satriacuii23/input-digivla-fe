@@ -20,7 +20,7 @@ import {
 } from '@/components/articles/article-upload-fields'
 import {
   BroadcastVideoFileUpload,
-  VIDEO_AUTO_FILL_TITLE_EXTRA,
+  VIDEO_AUTO_FILL_HINT,
 } from '@/components/articles/broadcast-video-file-upload'
 
 const { Text } = Typography
@@ -163,7 +163,7 @@ export function BroadcastSingleUploadForm({
           <Form.Item
             label="Title"
             required
-            extra={VIDEO_AUTO_FILL_TITLE_EXTRA}
+            extra={VIDEO_AUTO_FILL_HINT}
             className="digivla-online-upload-field"
           >
             <Input

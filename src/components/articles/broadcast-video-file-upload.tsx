@@ -10,7 +10,11 @@ import {
 
 const { Dragger } = Upload
 
-export const VIDEO_AUTO_FILL_TITLE_EXTRA = 'Auto-filled from attached video filename'
+export const VIDEO_AUTO_FILL_HINT =
+  'Auto-filled from video filename (title, -HHmm time suffix e.g. -1120 → 11:20, duration from file)'
+
+/** @deprecated use VIDEO_AUTO_FILL_HINT */
+export const VIDEO_AUTO_FILL_TITLE_EXTRA = VIDEO_AUTO_FILL_HINT
 
 interface BroadcastVideoFileUploadProps {
   file: File | null

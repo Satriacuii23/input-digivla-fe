@@ -276,7 +276,7 @@ export default function UserManagementPage() {
         title={drawerMode === 'create' ? 'Tambah User Baru' : 'Edit User'}
         open={drawerOpen}
         onClose={closeDrawer}
-        width={420}
+        size={420}
         destroyOnClose
         extra={
           <Space>

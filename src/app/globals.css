@@ -598,226 +598,75 @@ a {
 .digivla-login-page {
   min-height: 100vh;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
   background: #ffffff;
 }
 
-.digivla-login-hero {
-  display: none;
-  flex: 0 0 46%;
-  max-width: 560px;
+.digivla-login-panel {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 48px 52px;
-  background: linear-gradient(165deg, #1e3a5f 0%, #16304f 48%, #0f2238 100%);
-  color: #ffffff;
-  position: relative;
-  overflow: hidden;
-}
-
-.digivla-login-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(243, 146, 55, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(255, 255, 255, 0.06) 0%, transparent 50%);
-  pointer-events: none;
-}
-
-.digivla-login-hero-inner {
-  position: relative;
-  z-index: 1;
-}
-
-.digivla-login-hero-logo-wrap {
-  display: inline-flex;
   align-items: center;
-  padding: 12px 16px;
-  margin-bottom: 32px;
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
-  max-width: 100%;
 }
 
-.digivla-login-hero-logo {
-  max-width: min(320px, 100%);
+.digivla-login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 40px;
+  width: 100%;
 }
 
-.digivla-login-hero-logo .digivla-logo-image {
+.digivla-login-brand-logo {
+  max-width: 260px;
+}
+
+.digivla-login-brand-logo .digivla-logo-image {
   width: auto !important;
   max-width: 100%;
 }
 
-.digivla-login-hero-copy {
-  margin-bottom: 32px;
-}
-
-.digivla-login-hero-title {
-  margin: 0 0 12px !important;
-  color: #ffffff !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.03em;
-  font-size: 32px !important;
-}
-
-.digivla-login-hero-desc {
-  margin: 0 !important;
-  color: rgba(255, 255, 255, 0.78) !important;
-  font-size: 15px;
-  line-height: 1.65;
-  max-width: 380px;
-}
-
-.digivla-login-features {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.digivla-login-features li {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.88);
-  line-height: 1.45;
-}
-
-.digivla-login-features .anticon {
-  margin-top: 2px;
-  color: #f39237;
-  font-size: 16px;
-}
-
-.digivla-login-hero-footer {
-  position: relative;
-  z-index: 1;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.45) !important;
-}
-
-.digivla-login-main {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 24px;
-  background: #f8fafc;
-}
-
-.digivla-login-main-inner {
-  width: 100%;
-  max-width: 440px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.digivla-login-mobile-brand {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: 28px;
-  width: 100%;
-}
-
-.digivla-login-mobile-brand .digivla-logo {
-  max-width: 280px;
-  margin: 0 auto;
-}
-
-.digivla-login-mobile-sub {
+.digivla-login-brand-tag {
   display: block;
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 13px;
   color: #64748b !important;
   font-weight: 500;
-}
-
-.digivla-login-center {
-  width: 100%;
-  max-width: 420px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.digivla-login-brand-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.digivla-login-brand-text {
-  margin-top: 16px;
-}
-
-.digivla-login-brand-title {
-  margin: 0 !important;
-  color: #1e3a5f !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.02em;
-}
-
-.digivla-login-brand-sub {
-  display: block;
-  margin-top: 6px;
-  font-size: 14px;
-  color: #64748b;
-}
-
-.digivla-login-logo-mark {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: linear-gradient(145deg, #1e3a5f 0%, #2d5a8e 100%);
-  box-shadow: 0 8px 24px rgba(30, 58, 95, 0.22);
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: #ffffff;
+  letter-spacing: 0.01em;
 }
 
 .digivla-login-card {
-  position: relative;
   width: 100%;
   background: #ffffff;
   border: 1px solid #e8edf2;
-  border-radius: 16px;
-  padding: 32px 28px 24px;
-  box-shadow: 0 8px 32px rgba(15, 32, 53, 0.07);
+  border-radius: 12px;
+  padding: 32px 28px 28px;
 }
 
 .digivla-login-card-header {
-  text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .digivla-login-card-title {
-  margin: 0 0 8px !important;
-  color: #1e3a5f !important;
+  margin: 0 0 6px !important;
+  color: #0f172a !important;
   font-weight: 600 !important;
   letter-spacing: -0.02em;
+  font-size: 22px !important;
 }
 
 .digivla-login-card-subtitle {
   font-size: 14px;
   line-height: 1.5;
+  color: #64748b !important;
 }
 
 .digivla-login-form .ant-form-item {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .digivla-login-form .ant-form-item-label > label {
@@ -828,21 +677,20 @@ a {
 
 .digivla-login-form .ant-input-affix-wrapper,
 .digivla-login-form .ant-input {
-  border-radius: 10px;
+  border-radius: 8px;
   border-color: #e2e8f0;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  background: #ffffff;
 }
 
 .digivla-login-form .ant-input-affix-wrapper:hover,
 .digivla-login-form .ant-input:hover {
-  border-color: #94a3b8;
+  border-color: #cbd5e1;
 }
 
 .digivla-login-form .ant-input-affix-wrapper-focused,
 .digivla-login-form .ant-input-affix-wrapper:focus-within {
   border-color: #1e3a5f;
-  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.12);
+  box-shadow: 0 0 0 2px rgba(30, 58, 95, 0.08);
 }
 
 .digivla-login-input-icon {
@@ -851,80 +699,37 @@ a {
 
 .digivla-login-submit {
   margin-bottom: 0 !important;
-  margin-top: 4px !important;
+  margin-top: 8px !important;
 }
 
 .digivla-login-btn {
-  height: 46px !important;
+  height: 44px !important;
   font-weight: 600;
   font-size: 15px;
-  border-radius: 10px !important;
-  box-shadow: 0 4px 14px rgba(30, 58, 95, 0.2);
-}
-
-.digivla-login-btn:not(:disabled):hover {
-  box-shadow: 0 6px 20px rgba(30, 58, 95, 0.28);
-}
-
-.digivla-login-secure {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #f1f5f9;
-  font-size: 12px;
-  color: #94a3b8;
-}
-
-.digivla-login-secure .anticon {
-  font-size: 14px;
-  color: #64748b;
+  border-radius: 8px !important;
 }
 
 .digivla-login-footer {
-  margin-top: 24px;
+  margin-top: 32px;
   font-size: 12px;
   text-align: center;
   color: #94a3b8 !important;
 }
 
-@media (min-width: 992px) {
-  .digivla-login-hero {
-    display: flex;
-  }
-
-  .digivla-login-mobile-brand {
-    display: none;
-  }
-
-  .digivla-login-main {
-    background: #ffffff;
-  }
-
-  .digivla-login-footer {
-    display: none;
-  }
-}
-
-@media (max-width: 991px) {
-  .digivla-login-page {
-    flex-direction: column;
-  }
-
-  .digivla-login-main {
-    flex: 1;
-    padding: 24px 16px;
-    background: #ffffff;
-  }
-}
-
 @media (max-width: 480px) {
+  .digivla-login-page {
+    padding: 32px 20px;
+    align-items: flex-start;
+    padding-top: 48px;
+  }
+
+  .digivla-login-brand {
+    margin-bottom: 32px;
+  }
+
   .digivla-login-card {
-    padding: 24px 20px 20px;
-    border-radius: 14px;
-    box-shadow: 0 4px 20px rgba(15, 32, 53, 0.06);
+    padding: 28px 22px 24px;
+    border-radius: 10px;
   }
 }
 
@@ -2720,6 +2525,15 @@ a {
 .digivla-upload-batch-desc {
   display: block;
   font-size: 13px;
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+.digivla-upload-batch-bulk-hint {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .digivla-upload-batch-form {
@@ -3397,10 +3211,6 @@ a {
 
   .digivla-table-toolbar .ant-btn:not(.digivla-toolbar-icon-btn) {
     width: 100%;
-  }
-
-  .digivla-login-card {
-    padding: 24px 20px;
   }
 }
 

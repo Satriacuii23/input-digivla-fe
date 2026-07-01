@@ -39,6 +39,7 @@ import {
   hasAnyBatchValue,
   type ArticleUploadBatchValues,
 } from '@/components/articles/article-upload-batch-drawer'
+import { applyBatchToBroadcastForms } from '@/lib/articles/article-upload-batch-apply'
 import {
   BroadcastMultiUploadPanel,
   type BroadcastMultiFormValues,
@@ -196,12 +197,15 @@ export default function TVUploadPage() {
     async (files: File[]) => {
       const selectedFile = files[0]
       if (!selectedFile) return
+
+      setFile(selectedFile)
       if (selectedMedia) {
-        setFile(selectedFile)
-        setFilePath(generateFilePath(date, parseInt(selectedMedia!)))
+        setFilePath(generateFilePath(date, parseInt(selectedMedia)))
       }
+
       const metadata = await getVideoUploadMetadata(selectedFile)
       if (metadata.title) setTitle(metadata.title)
+      if (metadata.time) setTime(metadata.time)
       if (metadata.duration != null) setDuration(metadata.duration)
     },
     [date, selectedMedia],
@@ -219,6 +223,7 @@ export default function TVUploadPage() {
           file: selectedFile,
           filePath: generateFilePath(form.date, form.media_id ? parseInt(form.media_id) : null),
           ...(metadata.title ? { title: metadata.title } : {}),
+          ...(metadata.time ? { time: metadata.time } : {}),
           ...(metadata.duration != null ? { duration: metadata.duration } : {}),
         }
       }),
@@ -327,20 +332,10 @@ export default function TVUploadPage() {
       }
 
       setMultiFormData((prev) =>
-        prev.map((form, idx) => {
-          if (!targets.includes(idx)) return form
-          const next = { ...form }
-          if (batch.mediaId) next.media_id = batch.mediaId
-          if (batch.title) next.title = batch.title
-          if (batch.content) next.content = batch.content
-          if (batch.date) next.date = batch.date
-          if (batch.journalist) next.journalist = batch.journalist
-          if (batch.time) next.time = batch.time
-          if (batch.duration) next.duration = batch.duration
+        applyBatchToBroadcastForms(prev, targets, batch, (next) => {
           if (next.file && next.media_id) {
             next.filePath = generateFilePath(next.date, parseInt(next.media_id))
           }
-          return next
         }),
       )
 
@@ -639,6 +634,7 @@ export default function TVUploadPage() {
               setFile(null)
               setFilePath('')
               setTitle('')
+              setTime('')
               setDuration('')
             }}
             duplicateWarning={duplicateWarning}
@@ -671,7 +667,7 @@ export default function TVUploadPage() {
           onRemoveFile={(index) =>
             setMultiFormData((prev) => {
               const next = [...prev]
-              next[index] = { ...prev[index], file: null, filePath: '', title: '', duration: '' }
+              next[index] = { ...prev[index], file: null, filePath: '', title: '', time: '', duration: '' }
               return next
             })
           }

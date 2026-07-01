@@ -69,7 +69,10 @@ export function UploadTimeAnchorDuration({
   return (
     <Row gutter={[16, 0]}>
       <Col xs={24} sm={8}>
-        <Form.Item label="Time (WIB)" extra="24 jam · UTC+7">
+        <Form.Item
+          label="Time (WIB)"
+          extra="24 jam · UTC+7 · from filename suffix -HHmm (e.g. -1120 → 11:20)"
+        >
           <WibTimePicker value={time} onChange={onTimeChange} />
         </Form.Item>
       </Col>
@@ -84,7 +87,7 @@ export function UploadTimeAnchorDuration({
         </Form.Item>
       </Col>
       <Col xs={24} sm={8}>
-        <Form.Item label="Duration (seconds)" extra="Auto-filled from attached video">
+        <Form.Item label="Duration (seconds)" extra="From video file metadata">
           <InputNumber
             style={{ width: '100%' }}
             min={0}

@@ -18,6 +18,11 @@ import {
 import { AppstoreOutlined, CloseOutlined } from '@ant-design/icons'
 import { WibTimePicker } from '@/components/articles/wib-time-picker'
 import { ARTICLE_DRAWER_STYLES } from '@/lib/articles/article-list-helpers'
+import {
+  parseBatchContentBlocks,
+  parseBatchLines,
+  parseBatchTimeLines,
+} from '@/lib/articles/article-upload-batch-parse'
 
 const { Text } = Typography
 const { TextArea } = Input
@@ -35,6 +40,13 @@ export interface ArticleUploadBatchValues {
   url: string | null
   pages: string | null
   mmCol: string | null
+  /** Line 1 → target form #1, line 2 → #2, … */
+  titlesPerForm?: string[]
+  /** Block 1 → form #1; separate blocks with a line containing only `---` */
+  contentsPerForm?: string[]
+  journalistsPerForm?: string[]
+  timesPerForm?: string[]
+  durationsPerForm?: string[]
 }
 
 interface MediaOption {
@@ -69,6 +81,11 @@ export function hasAnyBatchValue(
 ): boolean {
   if (values.mediaId || values.date) return true
   if (values.title || values.content || values.journalist) return true
+  if (values.titlesPerForm?.length) return true
+  if (values.contentsPerForm?.length) return true
+  if (values.journalistsPerForm?.length) return true
+  if (values.timesPerForm?.length) return true
+  if (values.durationsPerForm?.length) return true
   if (variant === 'broadcast') {
     return Boolean(values.time || values.duration)
   }
@@ -81,13 +98,20 @@ export function collectBatchAppliedLabels(
 ): string[] {
   const labels: string[] = []
   if (values.mediaId) labels.push('media')
-  if (values.title) labels.push('title')
-  if (values.content) labels.push('content')
+  if (values.title) labels.push('title (all)')
+  if (values.titlesPerForm?.length) labels.push(`titles (${values.titlesPerForm.length})`)
+  if (values.content) labels.push('content (all)')
+  if (values.contentsPerForm?.length) labels.push(`contents (${values.contentsPerForm.length})`)
   if (values.date) labels.push('date')
-  if (values.journalist) labels.push(variant === 'broadcast' ? 'anchor' : 'journalist')
+  if (values.journalist) labels.push(variant === 'broadcast' ? 'anchor (all)' : 'journalist (all)')
+  if (values.journalistsPerForm?.length) {
+    labels.push(`${variant === 'broadcast' ? 'anchors' : 'journalists'} (${values.journalistsPerForm.length})`)
+  }
   if (variant === 'broadcast') {
-    if (values.time) labels.push('time')
-    if (values.duration) labels.push('duration')
+    if (values.time) labels.push('time (all)')
+    if (values.timesPerForm?.length) labels.push(`times (${values.timesPerForm.length})`)
+    if (values.duration) labels.push('duration (all)')
+    if (values.durationsPerForm?.length) labels.push(`durations (${values.durationsPerForm.length})`)
   } else {
     if (values.url) labels.push('url')
     if (values.pages) labels.push('pages')
@@ -119,6 +143,11 @@ export function ArticleUploadBatchDrawer({
   const [url, setUrl] = useState('')
   const [pages, setPages] = useState('')
   const [mmCol, setMmCol] = useState('')
+  const [titlesBulk, setTitlesBulk] = useState('')
+  const [contentsBulk, setContentsBulk] = useState('')
+  const [journalistsBulk, setJournalistsBulk] = useState('')
+  const [timesBulk, setTimesBulk] = useState('')
+  const [durationsBulk, setDurationsBulk] = useState('')
 
   useEffect(() => {
     if (open) {
@@ -132,8 +161,19 @@ export function ArticleUploadBatchDrawer({
       setUrl('')
       setPages('')
       setMmCol('')
+      setTitlesBulk('')
+      setContentsBulk('')
+      setJournalistsBulk('')
+      setTimesBulk('')
+      setDurationsBulk('')
     }
   }, [open])
+
+  const titlesPerForm = parseBatchLines(titlesBulk)
+  const contentsPerForm = parseBatchContentBlocks(contentsBulk)
+  const journalistsPerForm = parseBatchLines(journalistsBulk)
+  const timesPerForm = parseBatchTimeLines(timesBulk)
+  const durationsPerForm = parseBatchLines(durationsBulk)
 
   const draftValues: ArticleUploadBatchValues = {
     mediaId,
@@ -146,6 +186,11 @@ export function ArticleUploadBatchDrawer({
     url: variant === 'online' ? trimOrNull(url) : null,
     pages: variant === 'online' ? trimOrNull(pages) : null,
     mmCol: variant === 'online' ? trimOrNull(mmCol) : null,
+    titlesPerForm: titlesPerForm.length ? titlesPerForm : undefined,
+    contentsPerForm: contentsPerForm.length ? contentsPerForm : undefined,
+    journalistsPerForm: journalistsPerForm.length ? journalistsPerForm : undefined,
+    timesPerForm: timesPerForm.length ? timesPerForm : undefined,
+    durationsPerForm: durationsPerForm.length ? durationsPerForm : undefined,
   }
 
   const canApply = hasAnyBatchValue(draftValues, variant)
@@ -178,12 +223,13 @@ export function ArticleUploadBatchDrawer({
     >
       <div className="digivla-upload-batch-drawer-body">
         <Text type="secondary" className="digivla-upload-batch-desc">
-          Fill any field below to apply the same value across {targetCount} article form(s). All fields
-          are optional — use one or combine several.
+          Use <strong>Same for all</strong> to copy one value to every target form, or{' '}
+          <strong>Bulk per form</strong> to paste many titles/contents mapped to each upload tab (line 1 →
+          form #1, line 2 → form #2, …). Applies to {targetCount} article form(s).
         </Text>
 
         <Form layout="vertical" requiredMark="optional" className="digivla-upload-batch-form">
-          <Card size="small" title="Article Information" className="digivla-drawer-card">
+          <Card size="small" title="Same for all" className="digivla-drawer-card">
             <Row gutter={[16, 0]}>
               <Col xs={24} md={12}>
                 <Form.Item label={`Media (${mediaTypeLabel})`}>
@@ -225,7 +271,104 @@ export function ArticleUploadBatchDrawer({
 
           <Card
             size="small"
-            title={variant === 'broadcast' ? 'Broadcast Details' : 'Publication Details'}
+            title="Bulk per form"
+            className="digivla-drawer-card"
+            extra={
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {targetCount} form(s)
+              </Text>
+            }
+          >
+            <Text type="secondary" className="digivla-upload-batch-bulk-hint">
+              Row/block order matches upload tabs #1, #2, #3… Extra rows are ignored; missing rows leave
+              that field unchanged. Per-form values override &quot;same for all&quot; on matching tabs.
+            </Text>
+            <Row gutter={[16, 0]}>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  label="Titles"
+                  extra={`One title per line · ${titlesPerForm.length} parsed`}
+                >
+                  <TextArea
+                    placeholder={'Title article 1\nTitle article 2\nTitle article 3'}
+                    value={titlesBulk}
+                    onChange={(e) => setTitlesBulk(e.target.value)}
+                    rows={4}
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  label="Contents"
+                  extra={`Separate blocks with --- on its own line · ${contentsPerForm.length} parsed`}
+                >
+                  <TextArea
+                    placeholder={'Content for article 1\n---\nContent for article 2\n---\nContent for article 3'}
+                    value={contentsBulk}
+                    onChange={(e) => setContentsBulk(e.target.value)}
+                    rows={4}
+                  />
+                </Form.Item>
+              </Col>
+              {variant === 'broadcast' ? (
+                <>
+                  <Col xs={24} md={8}>
+                    <Form.Item label="Times (WIB)" extra={`HH:mm or HHmm · ${timesPerForm.length} parsed`}>
+                      <TextArea
+                        placeholder={'11:20\n09:30\n14:05'}
+                        value={timesBulk}
+                        onChange={(e) => setTimesBulk(e.target.value)}
+                        rows={3}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item label={anchorLabel} extra={`One per line · ${journalistsPerForm.length} parsed`}>
+                      <TextArea
+                        placeholder={'Anchor 1\nAnchor 2'}
+                        value={journalistsBulk}
+                        onChange={(e) => setJournalistsBulk(e.target.value)}
+                        rows={3}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Form.Item
+                      label="Duration (sec)"
+                      extra={`One per line · ${durationsPerForm.length} parsed`}
+                      style={{ marginBottom: 0 }}
+                    >
+                      <TextArea
+                        placeholder={'163\n120\n95'}
+                        value={durationsBulk}
+                        onChange={(e) => setDurationsBulk(e.target.value)}
+                        rows={3}
+                      />
+                    </Form.Item>
+                  </Col>
+                </>
+              ) : (
+                <Col xs={24}>
+                  <Form.Item
+                    label={anchorLabel}
+                    extra={`One per line · ${journalistsPerForm.length} parsed`}
+                    style={{ marginBottom: 0 }}
+                  >
+                    <TextArea
+                      placeholder={'Journalist 1\nJournalist 2'}
+                      value={journalistsBulk}
+                      onChange={(e) => setJournalistsBulk(e.target.value)}
+                      rows={3}
+                    />
+                  </Form.Item>
+                </Col>
+              )}
+            </Row>
+          </Card>
+
+          <Card
+            size="small"
+            title={variant === 'broadcast' ? 'Broadcast details (same for all)' : 'Publication details (same for all)'}
             className="digivla-drawer-card"
           >
             <Row gutter={[16, 0]}>
@@ -322,7 +465,7 @@ export function getBatchTargetIndices(
   totalForms: number,
 ): number[] {
   if (previewOpen && previewSelected.size > 0) {
-    return Array.from(previewSelected)
+    return Array.from(previewSelected).sort((a, b) => a - b)
   }
   return Array.from({ length: totalForms }, (_, i) => i)
 }

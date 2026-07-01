@@ -536,7 +536,7 @@ export function MediaReachPageContent() {
       <Card variant="borderless" className="digivla-page-card digivla-media-reach-card">
         <Steps
           current={step}
-          size={isMobile ? 'small' : 'default'}
+          size={isMobile ? 'small' : 'medium'}
           className="digivla-media-reach-steps"
           items={stepItems}
         />
@@ -752,7 +752,7 @@ export function MediaReachPageContent() {
           setSelectorsOpen(false)
           setActiveSelectorKey(null)
         }}
-        width={isMobile ? '100%' : 480}
+        size={isMobile ? '100%' : 480}
         className="digivla-media-reach-selector-drawer"
       >
         <Paragraph type="secondary">

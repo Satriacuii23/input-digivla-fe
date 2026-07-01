@@ -2,18 +2,11 @@
 
 import { useState } from 'react'
 import { App, Form, Input, Button, Typography } from 'antd'
-import { LockOutlined, UserOutlined, SafetyCertificateOutlined, CheckCircleFilled } from '@ant-design/icons'
+import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { defaultHomeForRole } from '@/lib/auth/rbac'
 import { DigivlaLogo } from '@/components/ui/logo'
 
-const { Title, Text, Paragraph } = Typography
-
-const FEATURES = [
-  'Kelola artikel TV, Radio & Online',
-  'Quality Control upload harian',
-  'Master data media terpusat',
-  'Akses per role & tim produksi',
-]
+const { Title, Text } = Typography
 
 export default function LoginPage() {
   const { message } = App.useApp()
@@ -37,7 +30,7 @@ export default function LoginPage() {
       }
       message.error(data.error || 'Username atau password salah')
     } catch {
-      message.error('Gagal terhubung ke server. Pastikan backend berjalan di port 8005.')
+      message.error('Gagal terhubung ke server. Pastikan backend berjalan.')
     } finally {
       setLoading(false)
     }
@@ -45,103 +38,71 @@ export default function LoginPage() {
 
   return (
     <div className="digivla-login-page">
-      <aside className="digivla-login-hero" aria-hidden={false}>
-        <div className="digivla-login-hero-inner">
-          <div className="digivla-login-hero-logo-wrap">
-            <DigivlaLogo height={44} className="digivla-login-hero-logo" />
-          </div>
-          <div className="digivla-login-hero-copy">
-            <Title level={2} className="digivla-login-hero-title">
-              IDS 2.0
+      <div className="digivla-login-panel">
+        <header className="digivla-login-brand">
+          <DigivlaLogo height={42} className="digivla-login-brand-logo" />
+          <Text className="digivla-login-brand-tag">IDS 2.0 · Daily Uploader</Text>
+        </header>
+
+        <div className="digivla-login-card">
+          <div className="digivla-login-card-header">
+            <Title level={3} className="digivla-login-card-title">
+              Masuk
             </Title>
-            <Paragraph className="digivla-login-hero-desc">
-              Daily Uploader — platform operasi media untuk input artikel, quality control, dan manajemen data media.
-            </Paragraph>
-          </div>
-          <ul className="digivla-login-features">
-            {FEATURES.map((item) => (
-              <li key={item}>
-                <CheckCircleFilled />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <Text className="digivla-login-hero-footer">© {new Date().getFullYear()} Digivla Indonesia</Text>
-      </aside>
-
-      <main className="digivla-login-main">
-        <div className="digivla-login-main-inner">
-          <div className="digivla-login-mobile-brand">
-            <DigivlaLogo height={40} />
-            <Text className="digivla-login-mobile-sub">IDS 2.0 · Daily Uploader</Text>
+            <Text type="secondary" className="digivla-login-card-subtitle">
+              Gunakan akun yang diberikan administrator
+            </Text>
           </div>
 
-          <div className="digivla-login-card">
-            <div className="digivla-login-card-header">
-              <Title level={4} className="digivla-login-card-title">
-                Masuk ke akun Anda
-              </Title>
-              <Text type="secondary" className="digivla-login-card-subtitle">
-                Gunakan username dan password yang diberikan administrator
-              </Text>
-            </div>
-
-            <Form
-              layout="vertical"
-              onFinish={onFinish}
-              requiredMark={false}
-              size="large"
-              className="digivla-login-form"
-              autoComplete="on"
+          <Form
+            layout="vertical"
+            onFinish={onFinish}
+            requiredMark={false}
+            size="large"
+            className="digivla-login-form"
+            autoComplete="on"
+          >
+            <Form.Item
+              name="username"
+              label="Username"
+              rules={[{ required: true, message: 'Masukkan username' }]}
             >
-              <Form.Item
-                name="username"
-                label="Username"
-                rules={[{ required: true, message: 'Masukkan username' }]}
+              <Input
+                prefix={<UserOutlined className="digivla-login-input-icon" />}
+                placeholder="username"
+                autoComplete="username"
+                autoFocus
+              />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              label="Password"
+              rules={[{ required: true, message: 'Masukkan password' }]}
+            >
+              <Input.Password
+                prefix={<LockOutlined className="digivla-login-input-icon" />}
+                placeholder="Password"
+                autoComplete="current-password"
+              />
+            </Form.Item>
+            <Form.Item className="digivla-login-submit">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                block
+                className="digivla-login-btn"
               >
-                <Input
-                  prefix={<UserOutlined className="digivla-login-input-icon" />}
-                  placeholder="contoh: online"
-                  autoComplete="username"
-                  autoFocus
-                />
-              </Form.Item>
-              <Form.Item
-                name="password"
-                label="Password"
-                rules={[{ required: true, message: 'Masukkan password' }]}
-              >
-                <Input.Password
-                  prefix={<LockOutlined className="digivla-login-input-icon" />}
-                  placeholder="Masukkan password"
-                  autoComplete="current-password"
-                />
-              </Form.Item>
-              <Form.Item className="digivla-login-submit">
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  block
-                  className="digivla-login-btn"
-                >
-                  Masuk
-                </Button>
-              </Form.Item>
-            </Form>
-
-            <div className="digivla-login-secure">
-              <SafetyCertificateOutlined />
-              <Text type="secondary">Akses terbatas untuk pengguna terotorisasi</Text>
-            </div>
-          </div>
-
-          <Text type="secondary" className="digivla-login-footer">
-            © {new Date().getFullYear()} Digivla Indonesia
-          </Text>
+                Masuk
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
-      </main>
+
+        <footer className="digivla-login-footer">
+          <Text type="secondary">© {new Date().getFullYear()} Digivla Indonesia</Text>
+        </footer>
+      </div>
     </div>
   )
 }

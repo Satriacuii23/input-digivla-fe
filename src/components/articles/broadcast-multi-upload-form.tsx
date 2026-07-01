@@ -28,7 +28,7 @@ import {
   UploadDateField,
   UploadTimeAnchorDuration,
 } from '@/components/articles/article-upload-fields'
-import { BroadcastVideoFileUpload, VIDEO_AUTO_FILL_TITLE_EXTRA } from '@/components/articles/broadcast-video-file-upload'
+import { BroadcastVideoFileUpload, VIDEO_AUTO_FILL_HINT } from '@/components/articles/broadcast-video-file-upload'
 import { isArticleUploadFormReady } from '@/lib/articles/article-upload-validation'
 import {
   canAddMoreMultiUploadArticles,
@@ -191,7 +191,7 @@ export const BroadcastMultiFormCard = memo(function BroadcastMultiFormCard({
         <Form.Item
           label="Title"
           required
-          extra={VIDEO_AUTO_FILL_TITLE_EXTRA}
+          extra={VIDEO_AUTO_FILL_HINT}
           className="digivla-online-upload-field"
         >
           <Input
@@ -412,7 +412,7 @@ export function BroadcastMultiUploadPanel({
 
       <div className="digivla-online-upload-footer digivla-online-upload-multi-footer">
         <Text type="secondary" className="digivla-online-upload-multi-footer-hint">
-          <AppstoreOutlined /> Use Batch from the toolbar above to apply media, date, and broadcast details.
+          <AppstoreOutlined /> Use Batch to apply shared fields or paste multiple titles/contents per upload tab.
         </Text>
         <Link href={listHref}>
           <Button>Cancel</Button>
