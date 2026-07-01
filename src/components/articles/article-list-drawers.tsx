@@ -31,7 +31,7 @@ import {
   type ArticleRow,
 } from '@/lib/articles/article-list-helpers'
 
-const { Text, Paragraph, Link } = Typography
+const { Text, Paragraph } = Typography
 
 type DrawerWidth = number | string
 
@@ -93,15 +93,28 @@ export function ArticlePreviewDrawer({
 
   return (
     <Drawer
-      title={title}
+      title={
+        article ? (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingRight: 24 }}>
+            <span style={{ fontWeight: 600, color: '#1e293b' }}>{title}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: '#64748b', background: '#f1f5f9', padding: '4px 10px', borderRadius: 12 }}>
+              ID: {formatArticleIdDisplay(article.article_id)}
+            </span>
+          </div>
+        ) : (
+          title
+        )
+      }
       open={open}
       onClose={onClose}
-      size={width}
+      styles={{
+        ...ARTICLE_DRAWER_STYLES,
+        wrapper: { width: width },
+      }}
       destroyOnClose
       className="digivla-media-drawer digivla-media-drawer-view digivla-article-drawer"
-      styles={ARTICLE_DRAWER_STYLES}
       footer={
-        <div className="digivla-drawer-footer">
+        <div className="digivla-drawer-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, borderTop: '1px solid #f1f5f9', padding: '16px 24px' }}>
           <Button icon={<CloseOutlined />} onClick={onClose}>
             Close
           </Button>
@@ -109,6 +122,7 @@ export function ArticlePreviewDrawer({
             <Button
               type="primary"
               icon={<EditOutlined />}
+              style={{ minWidth: 120 }}
               onClick={() => {
                 onClose()
                 onEdit(article)
@@ -121,58 +135,101 @@ export function ArticlePreviewDrawer({
       }
     >
       {article && (
-        <div className="digivla-drawer-stack">
-          <div className="digivla-article-drawer-hero">
-            <Text type="secondary" className="digivla-article-drawer-eyebrow">
+        <div className="digivla-drawer-stack" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="digivla-article-drawer-hero" style={{ padding: '16px 20px', background: '#f8fafc', borderRadius: 8, borderLeft: '4px solid #3b82f6' }}>
+            <Text type="secondary" style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', marginBottom: 6 }}>
               Title
             </Text>
-            <Paragraph className="digivla-article-drawer-hero-title">
+            <Paragraph style={{ fontSize: 16, fontWeight: 600, color: '#0f172a', margin: 0, lineHeight: 1.5 }}>
               <HighlightSearchText text={article.title} keyword={searchKeyword} />
             </Paragraph>
-            {article.journalist?.trim() ? (
-              <Text type="secondary" className="digivla-article-drawer-hero-sub">
-                Anchor: {article.journalist.trim()}
-              </Text>
-            ) : null}
+            {article.journalist?.trim() && (
+              <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 11, color: '#1e40af', background: '#dbeafe', padding: '2px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase' }}>
+                  Anchor / Journalist
+                </span>
+                <Text style={{ fontSize: 13, color: '#334155', fontWeight: 500 }}>{article.journalist.trim()}</Text>
+              </div>
+            )}
           </div>
 
-          <Card size="small" title="Article Information" className="digivla-drawer-card">
-            <ArticleMetaDescriptions article={article} />
+          <Card
+            size="small"
+            title={<span style={{ fontWeight: 600, color: '#1e293b' }}>Article Metadata</span>}
+            className="digivla-drawer-card"
+            style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+          >
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px 12px' }}>
+              <div>
+                <Text type="secondary" style={{ display: 'block', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Media</Text>
+                <Text style={{ fontSize: 13, fontWeight: 500, color: '#334155' }}>{article.media_name || '—'}</Text>
+              </div>
+              <div>
+                <Text type="secondary" style={{ display: 'block', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Media ID</Text>
+                <Text style={{ fontSize: 13, fontWeight: 500, color: '#334155' }}>{article.media_id || '—'}</Text>
+              </div>
+              <div>
+                <Text type="secondary" style={{ display: 'block', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Broadcast Date</Text>
+                <Text style={{ fontSize: 13, fontWeight: 500, color: '#334155' }}>{formatArticleDateLong(article.datee) || '—'}</Text>
+              </div>
+              <div>
+                <Text type="secondary" style={{ display: 'block', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Broadcast Time (WIB)</Text>
+                <Text style={{ fontSize: 13, fontWeight: 500, color: '#334155' }}>{article.timee ? formatWibTimeDisplay(article.timee) : '—'}</Text>
+              </div>
+              <div>
+                <Text type="secondary" style={{ display: 'block', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Duration</Text>
+                <Text style={{ fontSize: 13, fontWeight: 500, color: '#334155' }}>{article.duration ? `${article.duration.trim()} seconds` : '—'}</Text>
+              </div>
+              <div>
+                <Text type="secondary" style={{ display: 'block', fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 2 }}>Created At</Text>
+                <Text style={{ fontSize: 13, color: '#64748b' }}>{article.created_at ? formatCreatedAtDisplay(article.created_at) : '—'}</Text>
+              </div>
+            </div>
           </Card>
 
-          {article.content?.trim() ? (
-            <Card size="small" title="Content" className="digivla-drawer-card">
-              <Paragraph className="digivla-article-drawer-content">
+          {article.content?.trim() && (
+            <Card
+              size="small"
+              title={<span style={{ fontWeight: 600, color: '#1e293b' }}>Content / Summary</span>}
+              className="digivla-drawer-card"
+              style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+            >
+              <Paragraph style={{ fontSize: 14, lineHeight: '1.7', color: '#334155', whiteSpace: 'pre-wrap', margin: 0 }}>
                 <HighlightSearchText text={article.content} keyword={searchKeyword} />
               </Paragraph>
             </Card>
-          ) : null}
+          )}
 
-          {article.filee ? (
-            <Card size="small" title={fileLabel} className="digivla-drawer-card digivla-drawer-card-media">
+          {article.filee && (
+            <Card
+              size="small"
+              title={<span style={{ fontWeight: 600, color: '#1e293b' }}>{fileLabel}</span>}
+              className="digivla-drawer-card digivla-drawer-card-media"
+              style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+            >
               <video
                 controls
-                className="digivla-article-media-player"
+                style={{ width: '100%', borderRadius: 6, border: '1px solid #e2e8f0', background: '#000', maxHeight: 360 }}
                 src={fileUrl ?? undefined}
               >
                 Your browser does not support the media tag.
               </video>
-              <div className="digivla-article-file-actions">
-                {fileUrl ? (
+              {fileUrl && (
+                <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
                     type="link"
                     icon={<LinkOutlined />}
                     href={fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="digivla-article-open-file"
+                    style={{ padding: 0 }}
                   >
                     Open file in new tab
                   </Button>
-                ) : null}
-              </div>
+                </div>
+              )}
             </Card>
-          ) : null}
+          )}
         </div>
       )}
     </Drawer>
@@ -202,71 +259,81 @@ export function ArticleEditDrawer({
 }: ArticleEditDrawerProps) {
   return (
     <Drawer
-      title={title}
+      title={
+        article ? (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingRight: 24 }}>
+            <span style={{ fontWeight: 600, color: '#1e293b' }}>{title}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: '#64748b', background: '#f1f5f9', padding: '4px 10px', borderRadius: 12 }}>
+              ID: {formatArticleIdDisplay(article.article_id)}
+            </span>
+          </div>
+        ) : (
+          title
+        )
+      }
       open={open}
       onClose={onClose}
-      size={width}
+      styles={{
+        ...ARTICLE_DRAWER_STYLES,
+        wrapper: { width: width },
+      }}
       destroyOnClose
       maskClosable={!loading}
       className="digivla-media-drawer digivla-media-drawer-edit digivla-article-drawer"
-      styles={ARTICLE_DRAWER_STYLES}
       footer={
-        <div className="digivla-drawer-footer">
+        <div className="digivla-drawer-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, borderTop: '1px solid #f1f5f9', padding: '16px 24px' }}>
           <Button icon={<CloseOutlined />} onClick={onClose} disabled={loading}>
             Cancel
           </Button>
-          <Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={onSave}>
+          <Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={onSave} style={{ minWidth: 140 }}>
             Save Changes
           </Button>
         </div>
       }
     >
       {article && (
-        <div className="digivla-drawer-stack">
-          <Alert
-            type="info"
-            showIcon
-            title={`Editing article ${formatArticleIdDisplay(article.article_id)}`}
-            description={`${article.media_name || `Media #${article.media_id}`} · ${formatArticleDateLong(article.datee) || article.datee}`}
-            className="digivla-article-drawer-alert"
-          />
+        <div className="digivla-drawer-stack" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ padding: '12px 16px', background: '#eff6ff', borderRadius: 8, borderLeft: '4px solid #2563eb' }}>
+            <Text type="secondary" style={{ display: 'block', fontSize: 11, color: '#1e40af', fontWeight: 600, textTransform: 'uppercase', marginBottom: 4 }}>
+              Active Reference
+            </Text>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px 12px', fontSize: 12 }}>
+              <div><span style={{ color: '#1e40af', fontWeight: 500 }}>Media:</span> <span style={{ color: '#1e3a8a' }}>{article.media_name || '—'}</span></div>
+              <div><span style={{ color: '#1e40af', fontWeight: 500 }}>Date:</span> <span style={{ color: '#1e3a8a' }}>{formatArticleDateLong(article.datee) || '—'}</span></div>
+            </div>
+          </div>
 
-          <Card size="small" title="Reference" className="digivla-drawer-card">
-            <ArticleMetaDescriptions article={article} />
-          </Card>
-
-          <Form form={form} layout="vertical" requiredMark="optional" className="digivla-drawer-form">
-            <Card size="small" title="Article Information" className="digivla-drawer-card">
-              <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Title is required' }]}>
+          <Form form={form} layout="vertical" requiredMark="optional" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Card size="small" title={<span style={{ fontWeight: 600, color: '#1e293b' }}>Article Content</span>} style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+              <Form.Item name="title" label={<span style={{ fontWeight: 500 }}>Title</span>} rules={[{ required: true, message: 'Title is required' }]}>
                 <Input placeholder="Enter article title" />
               </Form.Item>
-              <Form.Item name="content" label="Content">
-                <Input.TextArea rows={5} placeholder="Enter article content" showCount maxLength={5000} />
+              <Form.Item name="content" label={<span style={{ fontWeight: 500 }}>Content / Summary</span>}>
+                <Input.TextArea rows={6} placeholder="Enter article content" showCount maxLength={5000} />
               </Form.Item>
             </Card>
 
-            <Card size="small" title="Broadcast Details" className="digivla-drawer-card">
-              <Form.Item name="journalist" label="Anchor / Journalist">
+            <Card size="small" title={<span style={{ fontWeight: 600, color: '#1e293b' }}>Broadcast Details</span>} style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+              <Form.Item name="journalist" label={<span style={{ fontWeight: 500 }}>Anchor / Journalist</span>}>
                 <Input placeholder="Enter anchor or journalist name" />
               </Form.Item>
-              <div className="digivla-form-grid-2">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <Form.Item
                   name="timee"
-                  label="Time (WIB)"
-                  extra="24 jam · UTC+7"
+                  label={<span style={{ fontWeight: 500 }}>Time (WIB)</span>}
+                  extra={<span style={{ fontSize: 11, color: '#94a3b8' }}>24-hour format</span>}
                 >
                   <TimePicker
                     format="HH:mm"
                     use12Hours={false}
                     inputReadOnly
                     placeholder="HH:mm"
-                    className="digivla-wib-time-picker"
                     style={{ width: '100%' }}
                     needConfirm={false}
                     showNow={false}
                   />
                 </Form.Item>
-                <Form.Item name="duration" label="Duration (seconds)">
+                <Form.Item name="duration" label={<span style={{ fontWeight: 500 }}>Duration (seconds)</span>}>
                   <Input placeholder="e.g. 163" inputMode="numeric" />
                 </Form.Item>
               </div>
@@ -299,64 +366,61 @@ export function ArticleDeleteDrawer({
 }: ArticleDeleteDrawerProps) {
   return (
     <Drawer
-      title={title}
+      title={<span style={{ fontWeight: 600, color: '#dc2626' }}>{title}</span>}
       open={open}
       onClose={() => !loading && onClose()}
-      size={width}
+      styles={{
+        ...ARTICLE_DRAWER_STYLES,
+        wrapper: { width: width },
+      }}
       destroyOnClose
       maskClosable={!loading}
       className="digivla-media-drawer digivla-media-drawer-delete digivla-article-drawer"
-      styles={ARTICLE_DRAWER_STYLES}
       footer={
-        <div className="digivla-drawer-footer">
+        <div className="digivla-drawer-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, borderTop: '1px solid #fee2e2', padding: '16px 24px', background: '#fff5f5' }}>
           <Button icon={<CloseOutlined />} onClick={onClose} disabled={loading}>
             Cancel
           </Button>
-          <Button type="primary" danger icon={<DeleteOutlined />} loading={loading} onClick={onConfirm}>
-            Delete Article
+          <Button type="primary" danger icon={<DeleteOutlined />} loading={loading} onClick={onConfirm} style={{ minWidth: 150 }}>
+            Confirm Delete
           </Button>
         </div>
       }
     >
       {article && (
-        <div className="digivla-drawer-stack">
+        <div className="digivla-drawer-stack" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <Alert
             type="error"
             showIcon
-            title="Permanent deletion"
-            description="This action cannot be undone. Only admin users can delete articles."
-            className="digivla-article-drawer-alert"
+            message={<span style={{ fontWeight: 600 }}>Permanent Deletion Warning</span>}
+            description="This action cannot be undone. Once deleted, this article and its associated video file references will be permanently removed."
+            style={{ borderRadius: 8 }}
           />
 
-          <Card size="small" title="Article to delete" className="digivla-drawer-card digivla-drawer-card-danger">
-            <div className="digivla-article-delete-title">
-              <Text strong>{article.title}</Text>
+          <Card
+            size="small"
+            title={<span style={{ fontWeight: 600, color: '#991b1b' }}>Article to delete</span>}
+            style={{ borderRadius: 8, border: '1px solid #fee2e2', background: '#fff5f5', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+          >
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#991b1b', marginBottom: 12, borderBottom: '1px dashed #fecaca', paddingBottom: 8 }}>
+              {article.title}
             </div>
-            <Descriptions column={1} size="small" className="digivla-drawer-desc digivla-article-drawer-meta">
-              <Descriptions.Item label="Row ID">
-                <Text code>{formatArticleIdDisplay(article.id)}</Text>
-              </Descriptions.Item>
-              <Descriptions.Item label="Article ID">
-                <Text code>{formatArticleIdDisplay(article.article_id)}</Text>
-              </Descriptions.Item>
-              <Descriptions.Item label="Media">
-                {article.media_name || '—'} ({article.media_id})
-              </Descriptions.Item>
-              <Descriptions.Item label="Date">{formatArticleDateLong(article.datee) || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Time (WIB)">
-                {article.timee ? formatWibTimeDisplay(article.timee) : '—'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Anchor">{article.journalist?.trim() || '—'}</Descriptions.Item>
-              <Descriptions.Item label="Duration (sec)">{article.duration?.trim() || '—'}</Descriptions.Item>
-              {article.filee ? (
-                <Descriptions.Item label="File">
-                  <Text className="digivla-table-file-link">{article.filee}</Text>
-                </Descriptions.Item>
-              ) : null}
-              <Descriptions.Item label="Created At">
-                {article.created_at ? formatCreatedAtDisplay(article.created_at) : '—'}
-              </Descriptions.Item>
-            </Descriptions>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px 10px', fontSize: 13 }}>
+              <div><span style={{ color: '#7f1d1d', fontWeight: 500 }}>Article ID:</span> <span style={{ color: '#b91c1c' }}>{formatArticleIdDisplay(article.article_id)}</span></div>
+              <div><span style={{ color: '#7f1d1d', fontWeight: 500 }}>Media Name:</span> <span style={{ color: '#b91c1c' }}>{article.media_name || '—'}</span></div>
+              <div><span style={{ color: '#7f1d1d', fontWeight: 500 }}>Broadcast Date:</span> <span style={{ color: '#b91c1c' }}>{formatArticleDateLong(article.datee) || '—'}</span></div>
+              <div><span style={{ color: '#7f1d1d', fontWeight: 500 }}>Broadcast Time:</span> <span style={{ color: '#b91c1c' }}>{article.timee ? formatWibTimeDisplay(article.timee) : '—'}</span></div>
+              <div><span style={{ color: '#7f1d1d', fontWeight: 500 }}>Anchor / Writer:</span> <span style={{ color: '#b91c1c' }}>{article.journalist?.trim() || '—'}</span></div>
+              <div><span style={{ color: '#7f1d1d', fontWeight: 500 }}>Duration:</span> <span style={{ color: '#b91c1c' }}>{article.duration ? `${article.duration.trim()} seconds` : '—'}</span></div>
+            </div>
+            {article.filee && (
+              <div style={{ marginTop: 12, borderTop: '1px dashed #fecaca', paddingTop: 8 }}>
+                <span style={{ color: '#7f1d1d', fontWeight: 500, fontSize: 13 }}>Attached File:</span>
+                <div style={{ fontSize: 12, wordBreak: 'break-all', color: '#b91c1c', marginTop: 2, fontFamily: 'monospace', background: '#fef2f2', padding: '4px 8px', borderRadius: 4 }}>
+                  {article.filee}
+                </div>
+              </div>
+            )}
           </Card>
         </div>
       )}
