@@ -209,7 +209,7 @@ export function ArticleUploadBatchDrawer({
     <Drawer
       title="Batch Apply"
       placement="right"
-      width={drawerWidth}
+      style={{ width: drawerWidth }}
       open={open}
       onClose={onClose}
       destroyOnClose
