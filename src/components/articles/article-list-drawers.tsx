@@ -391,7 +391,7 @@ export function ArticleDeleteDrawer({
           <Alert
             type="error"
             showIcon
-            message={<span style={{ fontWeight: 600, color: '#991b1b' }}>Warning: Permanent Deletion</span>}
+            title={<span style={{ fontWeight: 600, color: '#991b1b' }}>Warning: Permanent Deletion</span>}
             description="This action cannot be undone. All references, metadata, and associated video file bindings will be permanently deleted."
             style={{ borderRadius: 8, background: '#fef2f2', border: '1px solid #fee2e2' }}
           />

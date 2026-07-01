@@ -173,7 +173,7 @@ function QcEditDrawerShell({
       <Alert
         type="info"
         showIcon
-        message={<span style={{ fontWeight: 600 }}>Quality Control Review</span>}
+        title={<span style={{ fontWeight: 600 }}>Quality Control Review</span>}
         description={alertDescription}
         style={{ borderRadius: 8 }}
       />
