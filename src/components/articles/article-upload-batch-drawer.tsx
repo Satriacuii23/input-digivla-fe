@@ -231,9 +231,7 @@ export function ArticleUploadBatchDrawer({
     >
       <div className="digivla-upload-batch-drawer-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <Text type="secondary" className="digivla-upload-batch-desc" style={{ display: 'block', fontSize: 13, lineHeight: '1.6', color: '#64748b' }}>
-          Use <strong>Same for all</strong> to copy one value to every target form, or{' '}
-          <strong>Bulk per form</strong> to paste many titles/contents mapped to each upload tab (line 1 →
-          form #1, line 2 → form #2, …). Applies to {targetCount} article form(s).
+          Configure shared fields on the left/top card (Same for all), or paste list of items per form on the right/bottom card (Bulk per form).
         </Text>
 
         <Form layout="vertical" requiredMark="optional" className="digivla-upload-batch-form" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -252,34 +250,83 @@ export function ArticleUploadBatchDrawer({
                   />
                 </Form.Item>
               </Col>
-              <Col span={24}>
-                <Form.Item label="Title" style={{ marginBottom: 0 }}>
+              <Col xs={24} sm={12}>
+                <Form.Item label="Date" style={{ marginBottom: 0 }}>
+                  <DatePicker
+                    style={{ width: '100%' }}
+                    format="DD/MM/YYYY"
+                    placeholder="Select date (optional)"
+                    disabledDate={(current) => current && current > dayjs().endOf('day')}
+                    value={date ? dayjs(date) : null}
+                    onChange={(d) => setDate(d ? d.toDate() : null)}
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12}>
+                <Form.Item label={anchorLabel} style={{ marginBottom: 0 }}>
                   <Input
-                    placeholder="Enter title (optional)"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder={`Enter ${anchorLabel.toLowerCase()} (optional)`}
+                    value={journalist}
+                    onChange={(e) => setJournalist(e.target.value)}
                     allowClear
                   />
                 </Form.Item>
               </Col>
-              <Col span={24}>
-                <Form.Item label="Content" style={{ marginBottom: 0 }}>
-                  <TextArea
-                    placeholder="Enter content (optional)"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    rows={3}
-                    showCount
-                    maxLength={5000}
-                  />
-                </Form.Item>
-              </Col>
+              {variant === 'broadcast' ? (
+                <Col span={24}>
+                  <Form.Item label="Duration (seconds)" style={{ marginBottom: 0 }}>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      min={0}
+                      placeholder="e.g. 163 (optional)"
+                      value={duration !== '' ? Number(duration) : undefined}
+                      onChange={(v) => setDuration(numToStringOrNull(v) ?? '')}
+                    />
+                  </Form.Item>
+                </Col>
+              ) : (
+                <>
+                  <Col span={24}>
+                    <Form.Item label="Link URL" style={{ marginBottom: 0 }}>
+                      <Input
+                        placeholder="https://... (optional)"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        allowClear
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="Pages" style={{ marginBottom: 0 }}>
+                      <InputNumber
+                        style={{ width: '100%' }}
+                        min={0}
+                        placeholder="Optional"
+                        value={pages !== '' ? Number(pages) : undefined}
+                        onChange={(v) => setPages(numToStringOrNull(v) ?? '')}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="MM Column" style={{ marginBottom: 0 }}>
+                      <InputNumber
+                        style={{ width: '100%' }}
+                        min={0}
+                        step={0.01}
+                        placeholder="Optional"
+                        value={mmCol !== '' ? Number(mmCol) : undefined}
+                        onChange={(v) => setMmCol(numToStringOrNull(v) ?? '')}
+                      />
+                    </Form.Item>
+                  </Col>
+                </>
+              )}
             </Row>
           </Card>
 
           <Card
             size="small"
-            title="Bulk per form"
+            title="Bulk per form (Multiple)"
             className="digivla-drawer-card"
             style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
             extra={
@@ -289,8 +336,7 @@ export function ArticleUploadBatchDrawer({
             }
           >
             <Text type="secondary" className="digivla-upload-batch-bulk-hint" style={{ display: 'block', fontSize: 12, marginBottom: 12, color: '#94a3b8' }}>
-              Row/block order matches upload tabs #1, #2, #3… Extra rows are ignored; missing rows leave
-              that field unchanged. Per-form values override &quot;same for all&quot; on matching tabs.
+              Row/block order matches upload tabs #1, #2, #3… Per-form values will map sequentially.
             </Text>
             <Row gutter={[16, 12]}>
               <Col xs={24} lg={12}>
@@ -321,147 +367,21 @@ export function ArticleUploadBatchDrawer({
                   />
                 </Form.Item>
               </Col>
-              {variant === 'broadcast' ? (
-                <>
-                  <Col xs={24} md={8}>
-                    <Form.Item label="Times (WIB)" extra={`HH:mm or HHmm · ${timesPerForm.length} parsed`} style={{ marginBottom: 0 }}>
-                      <TextArea
-                        placeholder={'11:20\n09:30\n14:05'}
-                        value={timesBulk}
-                        onChange={(e) => setTimesBulk(e.target.value)}
-                        rows={3}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <Form.Item label={anchorLabel} extra={`One per line · ${journalistsPerForm.length} parsed`} style={{ marginBottom: 0 }}>
-                      <TextArea
-                        placeholder={'Anchor 1\nAnchor 2'}
-                        value={journalistsBulk}
-                        onChange={(e) => setJournalistsBulk(e.target.value)}
-                        rows={3}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label="Duration (sec)"
-                      extra={`One per line · ${durationsPerForm.length} parsed`}
-                      style={{ marginBottom: 0 }}
-                    >
-                      <TextArea
-                        placeholder={'163\n120\n95'}
-                        value={durationsBulk}
-                        onChange={(e) => setDurationsBulk(e.target.value)}
-                        rows={3}
-                      />
-                    </Form.Item>
-                  </Col>
-                </>
-              ) : (
+              {variant === 'broadcast' && (
                 <Col span={24}>
                   <Form.Item
-                    label={anchorLabel}
-                    extra={`One per line · ${journalistsPerForm.length} parsed`}
+                    label="Times (WIB)"
+                    extra={`HH:mm or HHmm · ${timesPerForm.length} parsed`}
                     style={{ marginBottom: 0 }}
                   >
                     <TextArea
-                      placeholder={'Journalist 1\nJournalist 2'}
-                      value={journalistsBulk}
-                      onChange={(e) => setJournalistsBulk(e.target.value)}
+                      placeholder={'11:20\n09:30\n14:05'}
+                      value={timesBulk}
+                      onChange={(e) => setTimesBulk(e.target.value)}
                       rows={3}
                     />
                   </Form.Item>
                 </Col>
-              )}
-            </Row>
-          </Card>
-
-          <Card
-            size="small"
-            title={variant === 'broadcast' ? 'Broadcast details (same for all)' : 'Publication details (same for all)'}
-            className="digivla-drawer-card"
-            style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
-          >
-            <Row gutter={[16, 12]}>
-              <Col xs={24} sm={12}>
-                <Form.Item label="Date" style={{ marginBottom: 0 }}>
-                  <DatePicker
-                    style={{ width: '100%' }}
-                    format="DD/MM/YYYY"
-                    placeholder="Select date (optional)"
-                    disabledDate={(current) => current && current > dayjs().endOf('day')}
-                    value={date ? dayjs(date) : null}
-                    onChange={(d) => setDate(d ? d.toDate() : null)}
-                  />
-                </Form.Item>
-              </Col>
-              {variant === 'broadcast' ? (
-                <Col xs={24} sm={12}>
-                  <Form.Item label="Time (WIB)" extra="24 jam · UTC+7" style={{ marginBottom: 0 }}>
-                    <WibTimePicker value={time} onChange={setTime} placeholder="HH:mm (optional)" />
-                  </Form.Item>
-                </Col>
-              ) : (
-                <Col xs={24} sm={12}>
-                  <Form.Item label="Link URL" style={{ marginBottom: 0 }}>
-                    <Input
-                      placeholder="https://... (optional)"
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      allowClear
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-              <Col xs={24} sm={12}>
-                <Form.Item label={anchorLabel} style={{ marginBottom: 0 }}>
-                  <Input
-                    placeholder={`Enter ${anchorLabel.toLowerCase()} (optional)`}
-                    value={journalist}
-                    onChange={(e) => setJournalist(e.target.value)}
-                    allowClear
-                  />
-                </Form.Item>
-              </Col>
-              {variant === 'broadcast' ? (
-                <Col xs={24} sm={12}>
-                  <Form.Item label="Duration (seconds)" style={{ marginBottom: 0 }}>
-                    <InputNumber
-                      style={{ width: '100%' }}
-                      min={0}
-                      placeholder="e.g. 163 (optional)"
-                      value={duration !== '' ? Number(duration) : undefined}
-                      onChange={(v) => setDuration(numToStringOrNull(v) ?? '')}
-                    />
-                  </Form.Item>
-                </Col>
-              ) : (
-                <>
-                  <Col xs={24} sm={12}>
-                    <Form.Item label="Pages" style={{ marginBottom: 0 }}>
-                      <InputNumber
-                        style={{ width: '100%' }}
-                        min={0}
-                        placeholder="Optional"
-                        value={pages !== '' ? Number(pages) : undefined}
-                        onChange={(v) => setPages(numToStringOrNull(v) ?? '')}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Form.Item label="MM Column" style={{ marginBottom: 0 }}>
-                      <InputNumber
-                        style={{ width: '100%' }}
-                        min={0}
-                        step={0.01}
-                        placeholder="Optional"
-                        value={mmCol !== '' ? Number(mmCol) : undefined}
-                        onChange={(v) => setMmCol(numToStringOrNull(v) ?? '')}
-                      />
-                    </Form.Item>
-                  </Col>
-                </>
               )}
             </Row>
           </Card>
