@@ -70,13 +70,13 @@ function QcDrawerShell({
       placement="right"
       open={open}
       onClose={onClose}
-      width={width}
       destroyOnClose
       maskClosable={maskClosable ?? !loading}
       className={`digivla-qc-drawer digivla-qc-${variant}-drawer digivla-media-drawer digivla-article-drawer`}
       styles={{
         header: { borderBottom: '1px solid #e2e8f0' },
         body: { padding: '20px 24px' },
+        wrapper: { width: width },
       }}
       footer={footer}
     >
