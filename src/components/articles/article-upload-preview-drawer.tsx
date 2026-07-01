@@ -48,7 +48,7 @@ export function ArticleUploadPreviewDrawer<T extends object>({
       placement="top"
       open={open}
       onClose={onClose}
-      height="85vh"
+      size="85vh"
       destroyOnClose
       maskClosable={!loading}
       className="digivla-upload-preview-drawer"
