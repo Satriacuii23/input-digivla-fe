@@ -272,19 +272,7 @@ export function ArticleUploadBatchDrawer({
                   />
                 </Form.Item>
               </Col>
-              {variant === 'broadcast' ? (
-                <Col span={24}>
-                  <Form.Item label="Duration (seconds)" style={{ marginBottom: 0 }}>
-                    <InputNumber
-                      style={{ width: '100%' }}
-                      min={0}
-                      placeholder="e.g. 163 (optional)"
-                      value={duration !== '' ? Number(duration) : undefined}
-                      onChange={(v) => setDuration(numToStringOrNull(v) ?? '')}
-                    />
-                  </Form.Item>
-                </Col>
-              ) : (
+              {variant !== 'broadcast' && (
                 <>
                   <Col span={24}>
                     <Form.Item label="Link URL" style={{ marginBottom: 0 }}>
@@ -368,20 +356,36 @@ export function ArticleUploadBatchDrawer({
                 </Form.Item>
               </Col>
               {variant === 'broadcast' && (
-                <Col span={24}>
-                  <Form.Item
-                    label="Times (WIB)"
-                    extra={`HH:mm or HHmm · ${timesPerForm.length} parsed`}
-                    style={{ marginBottom: 0 }}
-                  >
-                    <TextArea
-                      placeholder={'11:20\n09:30\n14:05'}
-                      value={timesBulk}
-                      onChange={(e) => setTimesBulk(e.target.value)}
-                      rows={3}
-                    />
-                  </Form.Item>
-                </Col>
+                <>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Times (WIB)"
+                      extra={`HH:mm or HHmm · ${timesPerForm.length} parsed`}
+                      style={{ marginBottom: 0 }}
+                    >
+                      <TextArea
+                        placeholder={'11:20\n09:30\n14:05'}
+                        value={timesBulk}
+                        onChange={(e) => setTimesBulk(e.target.value)}
+                        rows={3}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Durations (seconds)"
+                      extra={`One per line · ${durationsPerForm.length} parsed`}
+                      style={{ marginBottom: 0 }}
+                    >
+                      <TextArea
+                        placeholder={'163\n120\n95'}
+                        value={durationsBulk}
+                        onChange={(e) => setDurationsBulk(e.target.value)}
+                        rows={3}
+                      />
+                    </Form.Item>
+                  </Col>
+                </>
               )}
             </Row>
           </Card>
