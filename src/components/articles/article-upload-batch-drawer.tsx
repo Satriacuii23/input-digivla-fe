@@ -133,7 +133,7 @@ export function ArticleUploadBatchDrawer({
 }: ArticleUploadBatchDrawerProps) {
   const screens = Grid.useBreakpoint()
   const isMobile = !screens.md
-  const drawerWidth = isMobile ? '100%' : 540
+  const drawerWidth = isMobile ? '100%' : 680
 
   const anchorLabel =
     journalistLabel ?? (variant === 'broadcast' ? 'Anchor / Journalist' : 'Journalist')
@@ -209,13 +209,15 @@ export function ArticleUploadBatchDrawer({
     <Drawer
       title="Batch Apply"
       placement="right"
-      style={{ width: drawerWidth }}
+      styles={{
+        ...ARTICLE_DRAWER_STYLES,
+        wrapper: { width: drawerWidth },
+      }}
       open={open}
       onClose={onClose}
       destroyOnClose
       maskClosable
       className="digivla-upload-batch-drawer"
-      styles={ARTICLE_DRAWER_STYLES}
       footer={
         <div className="digivla-drawer-footer">
           <Button icon={<CloseOutlined />} onClick={onClose}>
@@ -291,7 +293,7 @@ export function ArticleUploadBatchDrawer({
               that field unchanged. Per-form values override &quot;same for all&quot; on matching tabs.
             </Text>
             <Row gutter={[16, 12]}>
-              <Col span={24}>
+              <Col xs={24} lg={12}>
                 <Form.Item
                   label="Titles"
                   extra={`One title per line · ${titlesPerForm.length} parsed`}
@@ -305,7 +307,7 @@ export function ArticleUploadBatchDrawer({
                   />
                 </Form.Item>
               </Col>
-              <Col span={24}>
+              <Col xs={24} lg={12}>
                 <Form.Item
                   label="Contents"
                   extra={`Separate blocks with --- on its own line · ${contentsPerForm.length} parsed`}
@@ -321,7 +323,7 @@ export function ArticleUploadBatchDrawer({
               </Col>
               {variant === 'broadcast' ? (
                 <>
-                  <Col span={24}>
+                  <Col xs={24} md={8}>
                     <Form.Item label="Times (WIB)" extra={`HH:mm or HHmm · ${timesPerForm.length} parsed`} style={{ marginBottom: 0 }}>
                       <TextArea
                         placeholder={'11:20\n09:30\n14:05'}
@@ -331,7 +333,7 @@ export function ArticleUploadBatchDrawer({
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={24}>
+                  <Col xs={24} md={8}>
                     <Form.Item label={anchorLabel} extra={`One per line · ${journalistsPerForm.length} parsed`} style={{ marginBottom: 0 }}>
                       <TextArea
                         placeholder={'Anchor 1\nAnchor 2'}
@@ -341,7 +343,7 @@ export function ArticleUploadBatchDrawer({
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={24}>
+                  <Col xs={24} md={8}>
                     <Form.Item
                       label="Duration (sec)"
                       extra={`One per line · ${durationsPerForm.length} parsed`}
@@ -382,7 +384,7 @@ export function ArticleUploadBatchDrawer({
             style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
           >
             <Row gutter={[16, 12]}>
-              <Col span={24}>
+              <Col xs={24} sm={12}>
                 <Form.Item label="Date" style={{ marginBottom: 0 }}>
                   <DatePicker
                     style={{ width: '100%' }}
@@ -395,13 +397,13 @@ export function ArticleUploadBatchDrawer({
                 </Form.Item>
               </Col>
               {variant === 'broadcast' ? (
-                <Col span={24}>
+                <Col xs={24} sm={12}>
                   <Form.Item label="Time (WIB)" extra="24 jam · UTC+7" style={{ marginBottom: 0 }}>
                     <WibTimePicker value={time} onChange={setTime} placeholder="HH:mm (optional)" />
                   </Form.Item>
                 </Col>
               ) : (
-                <Col span={24}>
+                <Col xs={24} sm={12}>
                   <Form.Item label="Link URL" style={{ marginBottom: 0 }}>
                     <Input
                       placeholder="https://... (optional)"
@@ -412,7 +414,7 @@ export function ArticleUploadBatchDrawer({
                   </Form.Item>
                 </Col>
               )}
-              <Col span={24}>
+              <Col xs={24} sm={12}>
                 <Form.Item label={anchorLabel} style={{ marginBottom: 0 }}>
                   <Input
                     placeholder={`Enter ${anchorLabel.toLowerCase()} (optional)`}
@@ -423,7 +425,7 @@ export function ArticleUploadBatchDrawer({
                 </Form.Item>
               </Col>
               {variant === 'broadcast' ? (
-                <Col span={24}>
+                <Col xs={24} sm={12}>
                   <Form.Item label="Duration (seconds)" style={{ marginBottom: 0 }}>
                     <InputNumber
                       style={{ width: '100%' }}
@@ -436,7 +438,7 @@ export function ArticleUploadBatchDrawer({
                 </Col>
               ) : (
                 <>
-                  <Col span={24}>
+                  <Col xs={24} sm={12}>
                     <Form.Item label="Pages" style={{ marginBottom: 0 }}>
                       <InputNumber
                         style={{ width: '100%' }}
@@ -447,7 +449,7 @@ export function ArticleUploadBatchDrawer({
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={24}>
+                  <Col xs={24} sm={12}>
                     <Form.Item label="MM Column" style={{ marginBottom: 0 }}>
                       <InputNumber
                         style={{ width: '100%' }}
