@@ -703,7 +703,6 @@ export default function TVUploadPage() {
           setPreviewOpen(false)
           setMultiDuplicateInfo({ show: false, duplicatesByForm: new Map() })
         }}
-        onBatch={() => setBatchOpen(true)}
         onToggleSelectAll={() =>
           setPreviewSelected(
             previewSelected.size === multiFormData.length

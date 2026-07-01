@@ -9,6 +9,7 @@ import {
   DatePicker,
   Drawer,
   Form,
+  Grid,
   Input,
   InputNumber,
   Row,
@@ -130,6 +131,10 @@ export function ArticleUploadBatchDrawer({
   onClose,
   onApply,
 }: ArticleUploadBatchDrawerProps) {
+  const screens = Grid.useBreakpoint()
+  const isMobile = !screens.md
+  const drawerWidth = isMobile ? '100%' : 540
+
   const anchorLabel =
     journalistLabel ?? (variant === 'broadcast' ? 'Anchor / Journalist' : 'Journalist')
 
@@ -203,7 +208,8 @@ export function ArticleUploadBatchDrawer({
   return (
     <Drawer
       title="Batch Apply"
-      placement="top"
+      placement="right"
+      width={drawerWidth}
       open={open}
       onClose={onClose}
       destroyOnClose
@@ -221,18 +227,18 @@ export function ArticleUploadBatchDrawer({
         </div>
       }
     >
-      <div className="digivla-upload-batch-drawer-body">
-        <Text type="secondary" className="digivla-upload-batch-desc">
+      <div className="digivla-upload-batch-drawer-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <Text type="secondary" className="digivla-upload-batch-desc" style={{ display: 'block', fontSize: 13, lineHeight: '1.6', color: '#64748b' }}>
           Use <strong>Same for all</strong> to copy one value to every target form, or{' '}
           <strong>Bulk per form</strong> to paste many titles/contents mapped to each upload tab (line 1 →
           form #1, line 2 → form #2, …). Applies to {targetCount} article form(s).
         </Text>
 
-        <Form layout="vertical" requiredMark="optional" className="digivla-upload-batch-form">
-          <Card size="small" title="Same for all" className="digivla-drawer-card">
-            <Row gutter={[16, 0]}>
-              <Col xs={24} md={12}>
-                <Form.Item label={`Media (${mediaTypeLabel})`}>
+        <Form layout="vertical" requiredMark="optional" className="digivla-upload-batch-form" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <Card size="small" title="Same for all" className="digivla-drawer-card" style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <Row gutter={[16, 12]}>
+              <Col span={24}>
+                <Form.Item label={`Media (${mediaTypeLabel})`} style={{ marginBottom: 0 }}>
                   <Select
                     placeholder="Select media (optional)"
                     allowClear
@@ -244,8 +250,8 @@ export function ArticleUploadBatchDrawer({
                   />
                 </Form.Item>
               </Col>
-              <Col xs={24} md={12}>
-                <Form.Item label="Title">
+              <Col span={24}>
+                <Form.Item label="Title" style={{ marginBottom: 0 }}>
                   <Input
                     placeholder="Enter title (optional)"
                     value={title}
@@ -254,7 +260,7 @@ export function ArticleUploadBatchDrawer({
                   />
                 </Form.Item>
               </Col>
-              <Col xs={24}>
+              <Col span={24}>
                 <Form.Item label="Content" style={{ marginBottom: 0 }}>
                   <TextArea
                     placeholder="Enter content (optional)"
@@ -273,21 +279,23 @@ export function ArticleUploadBatchDrawer({
             size="small"
             title="Bulk per form"
             className="digivla-drawer-card"
+            style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
             extra={
               <Text type="secondary" style={{ fontSize: 12 }}>
                 {targetCount} form(s)
               </Text>
             }
           >
-            <Text type="secondary" className="digivla-upload-batch-bulk-hint">
+            <Text type="secondary" className="digivla-upload-batch-bulk-hint" style={{ display: 'block', fontSize: 12, marginBottom: 12, color: '#94a3b8' }}>
               Row/block order matches upload tabs #1, #2, #3… Extra rows are ignored; missing rows leave
               that field unchanged. Per-form values override &quot;same for all&quot; on matching tabs.
             </Text>
-            <Row gutter={[16, 0]}>
-              <Col xs={24} md={12}>
+            <Row gutter={[16, 12]}>
+              <Col span={24}>
                 <Form.Item
                   label="Titles"
                   extra={`One title per line · ${titlesPerForm.length} parsed`}
+                  style={{ marginBottom: 0 }}
                 >
                   <TextArea
                     placeholder={'Title article 1\nTitle article 2\nTitle article 3'}
@@ -297,10 +305,11 @@ export function ArticleUploadBatchDrawer({
                   />
                 </Form.Item>
               </Col>
-              <Col xs={24} md={12}>
+              <Col span={24}>
                 <Form.Item
                   label="Contents"
                   extra={`Separate blocks with --- on its own line · ${contentsPerForm.length} parsed`}
+                  style={{ marginBottom: 0 }}
                 >
                   <TextArea
                     placeholder={'Content for article 1\n---\nContent for article 2\n---\nContent for article 3'}
@@ -312,8 +321,8 @@ export function ArticleUploadBatchDrawer({
               </Col>
               {variant === 'broadcast' ? (
                 <>
-                  <Col xs={24} md={8}>
-                    <Form.Item label="Times (WIB)" extra={`HH:mm or HHmm · ${timesPerForm.length} parsed`}>
+                  <Col span={24}>
+                    <Form.Item label="Times (WIB)" extra={`HH:mm or HHmm · ${timesPerForm.length} parsed`} style={{ marginBottom: 0 }}>
                       <TextArea
                         placeholder={'11:20\n09:30\n14:05'}
                         value={timesBulk}
@@ -322,8 +331,8 @@ export function ArticleUploadBatchDrawer({
                       />
                     </Form.Item>
                   </Col>
-                  <Col xs={24} md={8}>
-                    <Form.Item label={anchorLabel} extra={`One per line · ${journalistsPerForm.length} parsed`}>
+                  <Col span={24}>
+                    <Form.Item label={anchorLabel} extra={`One per line · ${journalistsPerForm.length} parsed`} style={{ marginBottom: 0 }}>
                       <TextArea
                         placeholder={'Anchor 1\nAnchor 2'}
                         value={journalistsBulk}
@@ -332,7 +341,7 @@ export function ArticleUploadBatchDrawer({
                       />
                     </Form.Item>
                   </Col>
-                  <Col xs={24} md={8}>
+                  <Col span={24}>
                     <Form.Item
                       label="Duration (sec)"
                       extra={`One per line · ${durationsPerForm.length} parsed`}
@@ -348,7 +357,7 @@ export function ArticleUploadBatchDrawer({
                   </Col>
                 </>
               ) : (
-                <Col xs={24}>
+                <Col span={24}>
                   <Form.Item
                     label={anchorLabel}
                     extra={`One per line · ${journalistsPerForm.length} parsed`}
@@ -370,10 +379,11 @@ export function ArticleUploadBatchDrawer({
             size="small"
             title={variant === 'broadcast' ? 'Broadcast details (same for all)' : 'Publication details (same for all)'}
             className="digivla-drawer-card"
+            style={{ borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
           >
-            <Row gutter={[16, 0]}>
-              <Col xs={24} md={12}>
-                <Form.Item label="Date">
+            <Row gutter={[16, 12]}>
+              <Col span={24}>
+                <Form.Item label="Date" style={{ marginBottom: 0 }}>
                   <DatePicker
                     style={{ width: '100%' }}
                     format="DD/MM/YYYY"
@@ -385,14 +395,14 @@ export function ArticleUploadBatchDrawer({
                 </Form.Item>
               </Col>
               {variant === 'broadcast' ? (
-                <Col xs={24} md={12}>
-                  <Form.Item label="Time (WIB)" extra="24 jam · UTC+7">
+                <Col span={24}>
+                  <Form.Item label="Time (WIB)" extra="24 jam · UTC+7" style={{ marginBottom: 0 }}>
                     <WibTimePicker value={time} onChange={setTime} placeholder="HH:mm (optional)" />
                   </Form.Item>
                 </Col>
               ) : (
-                <Col xs={24} md={12}>
-                  <Form.Item label="Link URL">
+                <Col span={24}>
+                  <Form.Item label="Link URL" style={{ marginBottom: 0 }}>
                     <Input
                       placeholder="https://... (optional)"
                       value={url}
@@ -402,8 +412,8 @@ export function ArticleUploadBatchDrawer({
                   </Form.Item>
                 </Col>
               )}
-              <Col xs={24} md={variant === 'broadcast' ? 12 : 24}>
-                <Form.Item label={anchorLabel}>
+              <Col span={24}>
+                <Form.Item label={anchorLabel} style={{ marginBottom: 0 }}>
                   <Input
                     placeholder={`Enter ${anchorLabel.toLowerCase()} (optional)`}
                     value={journalist}
@@ -413,7 +423,7 @@ export function ArticleUploadBatchDrawer({
                 </Form.Item>
               </Col>
               {variant === 'broadcast' ? (
-                <Col xs={24} md={12}>
+                <Col span={24}>
                   <Form.Item label="Duration (seconds)" style={{ marginBottom: 0 }}>
                     <InputNumber
                       style={{ width: '100%' }}
@@ -426,8 +436,8 @@ export function ArticleUploadBatchDrawer({
                 </Col>
               ) : (
                 <>
-                  <Col xs={24} md={12}>
-                    <Form.Item label="Pages">
+                  <Col span={24}>
+                    <Form.Item label="Pages" style={{ marginBottom: 0 }}>
                       <InputNumber
                         style={{ width: '100%' }}
                         min={0}
@@ -437,7 +447,7 @@ export function ArticleUploadBatchDrawer({
                       />
                     </Form.Item>
                   </Col>
-                  <Col xs={24} md={12}>
+                  <Col span={24}>
                     <Form.Item label="MM Column" style={{ marginBottom: 0 }}>
                       <InputNumber
                         style={{ width: '100%' }}

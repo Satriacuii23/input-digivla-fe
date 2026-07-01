@@ -562,7 +562,6 @@ export default function RadioUploadPage() {
           setPreviewOpen(false)
           setMultiDuplicateInfo({ show: false, duplicatesByForm: new Map() })
         }}
-        onBatch={() => setBatchOpen(true)}
         onToggleSelectAll={() =>
           setPreviewSelected(
             previewSelected.size === multiFormData.length

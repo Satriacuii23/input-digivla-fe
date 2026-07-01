@@ -17,7 +17,6 @@ interface ArticleUploadPreviewDrawerProps<T extends object> {
   selectedRowKeys: Key[]
   onSelectionChange: (keys: Key[]) => void
   onClose: () => void
-  onBatch?: () => void
   onToggleSelectAll: () => void
   selectAllLabel: string
   onSubmit: () => void
@@ -32,24 +31,30 @@ export function ArticleUploadPreviewDrawer<T extends object>({
   selectedRowKeys,
   onSelectionChange,
   onClose,
-  onBatch,
   onToggleSelectAll,
   selectAllLabel,
   onSubmit,
 }: ArticleUploadPreviewDrawerProps<T>) {
   return (
     <Drawer
-      title="Review Articles Before Upload"
+      title={
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingRight: 24 }}>
+          <span style={{ fontWeight: 600, color: '#1e293b' }}>Review Articles Before Upload</span>
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#64748b', background: '#f1f5f9', padding: '4px 10px', borderRadius: 12 }}>
+            {selectedCount} article(s) selected
+          </span>
+        </div>
+      }
       placement="top"
       open={open}
       onClose={onClose}
-      size="85vh"
+      height="85vh"
       destroyOnClose
       maskClosable={!loading}
       className="digivla-upload-preview-drawer"
       styles={ARTICLE_DRAWER_STYLES}
       footer={
-        <div className="digivla-drawer-footer">
+        <div className="digivla-drawer-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <Button icon={<CloseOutlined />} onClick={onClose} disabled={loading}>
             Cancel
           </Button>
@@ -59,31 +64,27 @@ export function ArticleUploadPreviewDrawer<T extends object>({
             icon={<UploadOutlined />}
             onClick={onSubmit}
             disabled={selectedCount === 0}
+            style={{ minWidth: 160 }}
           >
             Upload {selectedCount} Article(s)
           </Button>
         </div>
       }
     >
-      <div className="digivla-upload-preview-drawer-body">
-        <Text type="secondary" className="digivla-upload-preview-desc">
-          {onBatch
-            ? 'Select articles to upload. Use Batch to apply the same media and date to selected rows.'
-            : 'Select articles to upload.'}
+      <div className="digivla-upload-preview-drawer-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Text type="secondary" className="digivla-upload-preview-desc" style={{ fontSize: 13, color: '#64748b', lineHeight: '1.5' }}>
+          Select the articles you want to upload. Review their metadata in the table below to ensure accuracy before submitting.
         </Text>
-        <Space className="digivla-upload-preview-toolbar" wrap>
-          {onBatch ? (
-            <Button icon={<AppstoreOutlined />} onClick={onBatch}>
-              Batch
-            </Button>
-          ) : null}
-          <Button onClick={onToggleSelectAll}>{selectAllLabel}</Button>
-        </Space>
+        <div className="digivla-upload-preview-toolbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Button onClick={onToggleSelectAll} style={{ borderRadius: 6 }}>
+            {selectAllLabel}
+          </Button>
+        </div>
         <Table<T>
           rowKey="key"
           size="small"
           className="digivla-data-table digivla-upload-preview-table"
-          scroll={{ x: 900, y: 'calc(85vh - 220px)' }}
+          scroll={{ x: 900, y: 'calc(85vh - 240px)' }}
           rowSelection={{
             selectedRowKeys,
             onChange: (keys) => onSelectionChange(keys),
@@ -91,6 +92,7 @@ export function ArticleUploadPreviewDrawer<T extends object>({
           columns={columns}
           dataSource={dataSource}
           pagination={false}
+          style={{ border: '1px solid #f1f5f9', borderRadius: 8, overflow: 'hidden' }}
         />
       </div>
     </Drawer>
