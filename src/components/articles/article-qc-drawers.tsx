@@ -41,10 +41,11 @@ interface QcMetaItem {
   value: string
 }
 
-interface QcTopDrawerShellProps {
+interface QcDrawerShellProps {
   title: ReactNode
   open: boolean
   variant: 'preview' | 'edit'
+  width: number | string
   loading?: boolean
   maskClosable?: boolean
   onClose: () => void
@@ -52,47 +53,37 @@ interface QcTopDrawerShellProps {
   children: ReactNode
 }
 
-function QcTopDrawerShell({
+function QcDrawerShell({
   title,
   open,
   variant,
+  width,
   loading = false,
   maskClosable,
   onClose,
   footer,
   children,
-}: QcTopDrawerShellProps) {
+}: QcDrawerShellProps) {
   return (
     <Drawer
       title={title}
-      placement="top"
+      placement="right"
       open={open}
       onClose={onClose}
-      size="100%"
+      width={width}
       destroyOnClose
       maskClosable={maskClosable ?? !loading}
-      className={`digivla-qc-top-drawer digivla-qc-${variant}-drawer digivla-media-drawer digivla-article-drawer digivla-qc-drawer`}
+      className={`digivla-qc-drawer digivla-qc-${variant}-drawer digivla-media-drawer digivla-article-drawer`}
       styles={{
         header: { borderBottom: '1px solid #e2e8f0' },
+        body: { padding: '20px 24px' },
       }}
       footer={footer}
     >
-      <div className="digivla-qc-top-drawer-scroll">{children}</div>
+      <div className="digivla-drawer-stack" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        {children}
+      </div>
     </Drawer>
-  )
-}
-
-function QcTopDrawerFooter({
-  children,
-  isMobile,
-}: {
-  children: ReactNode
-  isMobile: boolean
-}) {
-  return (
-    <div className={`digivla-qc-top-drawer-footer${isMobile ? ' digivla-qc-top-drawer-footer--stacked' : ''}`} style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, borderTop: '1px solid #f1f5f9', padding: '16px 24px' }}>
-      {children}
-    </div>
   )
 }
 
@@ -106,7 +97,7 @@ function QcDrawerHero({
   metaItems: QcMetaItem[]
 }) {
   return (
-    <div style={{ padding: '16px 20px', background: '#f8fafc', borderRadius: 8, borderLeft: '4px solid #3b82f6', marginBottom: 20 }}>
+    <div style={{ padding: '16px 20px', background: '#f8fafc', borderRadius: 8, borderLeft: '4px solid #3b82f6' }}>
       <Text type="secondary" style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', marginBottom: 6 }}>
         {eyebrow}
       </Text>
@@ -126,6 +117,7 @@ function QcDrawerHero({
 interface QcEditDrawerShellProps {
   title: ReactNode
   open: boolean
+  width: number | string
   loading: boolean
   onClose: () => void
   onSave: () => void
@@ -140,6 +132,7 @@ interface QcEditDrawerShellProps {
 function QcEditDrawerShell({
   title,
   open,
+  width,
   loading,
   onClose,
   onSave,
@@ -150,19 +143,16 @@ function QcEditDrawerShell({
   referencePanel,
   formPanel,
 }: QcEditDrawerShellProps) {
-  const screens = useBreakpoint()
-  const isMobile = !screens.md
-  const isTablet = !!screens.md && !screens.xl
-
   return (
-    <QcTopDrawerShell
+    <QcDrawerShell
       title={title}
       open={open}
+      width={width}
       variant="edit"
       loading={loading}
       onClose={onClose}
       footer={
-        <QcTopDrawerFooter isMobile={isMobile}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, borderTop: '1px solid #f1f5f9', padding: '16px 24px' }}>
           <Button icon={<CloseOutlined />} onClick={onClose} disabled={loading}>
             Cancel
           </Button>
@@ -175,45 +165,31 @@ function QcEditDrawerShell({
           >
             Save QC Changes
           </Button>
-        </QcTopDrawerFooter>
+        </div>
       }
     >
-      <div className="digivla-qc-top-drawer-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <QcDrawerHero eyebrow={heroEyebrow} title={heroTitle} metaItems={metaItems} />
+      <QcDrawerHero eyebrow={heroEyebrow} title={heroTitle} metaItems={metaItems} />
 
-        <Alert
-          type="info"
-          showIcon
-          message={<span style={{ fontWeight: 600 }}>Quality Control Review</span>}
-          description={
-            isMobile
-              ? 'Review reference data, then update the form below.'
-              : alertDescription
-          }
-          style={{ borderRadius: 8 }}
-        />
+      <Alert
+        type="info"
+        showIcon
+        message={<span style={{ fontWeight: 600 }}>Quality Control Review</span>}
+        description={alertDescription}
+        style={{ borderRadius: 8 }}
+      />
 
-        <Row
-          gutter={[isMobile ? 12 : 20, isMobile ? 12 : 20]}
-          className={`digivla-qc-edit-layout${isTablet ? ' digivla-qc-edit-layout--stacked' : ''}`}
-        >
-          <Col xs={24} lg={10} xl={9} className="digivla-qc-edit-col digivla-qc-edit-col--reference">
-            <div className="digivla-qc-edit-side">{referencePanel}</div>
-          </Col>
-          <Col xs={24} lg={14} xl={15} className="digivla-qc-edit-col digivla-qc-edit-col--form">
-            {formPanel}
-          </Col>
-        </Row>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        {referencePanel}
+        {formPanel}
       </div>
-    </QcTopDrawerShell>
+    </QcDrawerShell>
   )
 }
 
 function useContentTextAreaProps() {
   const screens = useBreakpoint()
-  if (!screens.md) return { minRows: 8, maxRows: 18 }
-  if (!screens.xl) return { minRows: 10, maxRows: 24 }
-  return { minRows: 14, maxRows: 32 }
+  if (!screens.md) return { minRows: 6, maxRows: 12 }
+  return { minRows: 8, maxRows: 16 }
 }
 
 function buildBroadcastMetaItems(article: ArticleRow): QcMetaItem[] {
@@ -262,10 +238,10 @@ export function ArticleQcPreviewDrawer({
 }: ArticleQcPreviewDrawerProps) {
   const screens = useBreakpoint()
   const isMobile = !screens.md
-  const hasMedia = Boolean(article?.filee)
+  const width = isMobile ? '100%' : 560
 
   return (
-    <QcTopDrawerShell
+    <QcDrawerShell
       title={
         article ? (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingRight: 24 }}>
@@ -279,11 +255,12 @@ export function ArticleQcPreviewDrawer({
         )
       }
       open={open}
+      width={width}
       variant="preview"
       onClose={onClose}
       footer={
         article ? (
-          <QcTopDrawerFooter isMobile={isMobile}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, borderTop: '1px solid #f1f5f9', padding: '16px 24px' }}>
             <Button icon={<CloseOutlined />} onClick={onClose}>
               Close
             </Button>
@@ -298,75 +275,67 @@ export function ArticleQcPreviewDrawer({
             >
               {editButtonLabel}
             </Button>
-          </QcTopDrawerFooter>
+          </div>
         ) : null
       }
     >
-      {article ? (
-        <div className="digivla-qc-top-drawer-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {article && (
+        <>
           <QcDrawerHero
             eyebrow={`${mediaLabel} · Article ${formatArticleIdDisplay(article.article_id)}`}
             title={article.title}
             metaItems={buildBroadcastMetaItems(article)}
           />
 
-          <Row gutter={[isMobile ? 12 : 20, isMobile ? 12 : 20]} className="digivla-qc-preview-layout">
-            <Col xs={24} lg={hasMedia ? 14 : 24} xl={hasMedia ? 15 : 24}>
-              <div className="digivla-qc-preview-main" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
-                  <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Article Information
-                  </h3>
-                  <ArticleMetaDescriptions article={article} />
-                </div>
+          <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Article Information
+            </h3>
+            <ArticleMetaDescriptions article={article} />
+          </div>
 
-                {article.content?.trim() ? (
-                  <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
-                    <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Content
-                    </h3>
-                    <Paragraph style={{ fontSize: 14, lineHeight: '1.7', color: '#1e293b', whiteSpace: 'pre-wrap', margin: 0 }}>
-                      <HighlightSearchText text={article.content} keyword={searchKeyword} />
-                    </Paragraph>
-                  </div>
-                ) : null}
-              </div>
-            </Col>
+          {article.content?.trim() && (
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Content
+              </h3>
+              <Paragraph style={{ fontSize: 14, lineHeight: '1.7', color: '#1e293b', whiteSpace: 'pre-wrap', margin: 0 }}>
+                <HighlightSearchText text={article.content} keyword={searchKeyword} />
+              </Paragraph>
+            </div>
+          )}
 
-            {hasMedia ? (
-              <Col xs={24} lg={10} xl={9}>
-                <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
-                  <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    {fileLabel}
-                  </h3>
-                  <video
-                    controls
-                    style={{ width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', background: '#000', maxHeight: 380, boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}
-                    src={fileeToPublicUrl(article.filee) ?? undefined}
+          {article.filee && (
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                {fileLabel}
+              </h3>
+              <video
+                controls
+                style={{ width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', background: '#000', maxHeight: 320, boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}
+                src={fileeToPublicUrl(article.filee) ?? undefined}
+              >
+                Your browser does not support the media tag.
+              </video>
+              {fileeToPublicUrl(article.filee) && (
+                <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    type="link"
+                    icon={<LinkOutlined />}
+                    href={fileeToPublicUrl(article.filee)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ padding: 0, fontSize: 13 }}
                   >
-                    Your browser does not support the media tag.
-                  </video>
-                  {fileeToPublicUrl(article.filee) ? (
-                    <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
-                      <Button
-                        type="link"
-                        icon={<LinkOutlined />}
-                        href={fileeToPublicUrl(article.filee)!}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ padding: 0, fontSize: 13 }}
-                      >
-                        Open file in new tab
-                      </Button>
-                    </div>
-                  ) : null}
+                    Open file in new tab
+                  </Button>
                 </div>
-              </Col>
-            ) : null}
-          </Row>
-        </div>
-      ) : null}
-    </QcTopDrawerShell>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </QcDrawerShell>
   )
 }
 
@@ -389,12 +358,12 @@ export function OnlineArticleQcPreviewDrawer({
 }: OnlineArticleQcPreviewDrawerProps) {
   const screens = useBreakpoint()
   const isMobile = !screens.md
+  const width = isMobile ? '100%' : 560
   const fileLabel = article ? getOnlineArticleFileLabel(article) : ''
   const fileHref = article ? getOnlineArticleFileHref(article) : null
-  const hasFile = Boolean(fileLabel)
 
   return (
-    <QcTopDrawerShell
+    <QcDrawerShell
       title={
         article ? (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', paddingRight: 24 }}>
@@ -408,11 +377,12 @@ export function OnlineArticleQcPreviewDrawer({
         )
       }
       open={open}
+      width={width}
       variant="preview"
       onClose={onClose}
       footer={
         article ? (
-          <QcTopDrawerFooter isMobile={isMobile}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, borderTop: '1px solid #f1f5f9', padding: '16px 24px' }}>
             <Button icon={<CloseOutlined />} onClick={onClose}>
               Close
             </Button>
@@ -427,68 +397,60 @@ export function OnlineArticleQcPreviewDrawer({
             >
               {editButtonLabel}
             </Button>
-          </QcTopDrawerFooter>
+          </div>
         ) : null
       }
     >
-      {article ? (
-        <div className="digivla-qc-top-drawer-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {article && (
+        <>
           <QcDrawerHero
             eyebrow={`Online · Article ${formatArticleIdDisplay(article.article_id)}`}
             title={article.title}
             metaItems={buildOnlineMetaItems(article)}
           />
 
-          <Row gutter={[isMobile ? 12 : 20, isMobile ? 12 : 20]} className="digivla-qc-preview-layout">
-            <Col xs={24} lg={hasFile ? 14 : 24} xl={hasFile ? 15 : 24}>
-              <div className="digivla-qc-preview-main" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
-                  <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Article Information
-                  </h3>
-                  <OnlineArticleMetaDescriptions article={article} />
-                </div>
+          <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Article Information
+            </h3>
+            <OnlineArticleMetaDescriptions article={article} />
+          </div>
 
-                {article.content?.trim() ? (
-                  <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
-                    <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Content
-                    </h3>
-                    <Paragraph style={{ fontSize: 14, lineHeight: '1.7', color: '#1e293b', whiteSpace: 'pre-wrap', margin: 0 }}>
-                      <HighlightSearchText text={article.content} keyword={searchKeyword} />
-                    </Paragraph>
-                  </div>
-                ) : null}
-              </div>
-            </Col>
+          {article.content?.trim() && (
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Content
+              </h3>
+              <Paragraph style={{ fontSize: 14, lineHeight: '1.7', color: '#1e293b', whiteSpace: 'pre-wrap', margin: 0 }}>
+                <HighlightSearchText text={article.content} keyword={searchKeyword} />
+              </Paragraph>
+            </div>
+          )}
 
-            {hasFile ? (
-              <Col xs={24} lg={10} xl={9}>
-                <div style={{ background: '#f8fafc', borderRadius: 8, padding: 16, border: '1px solid #e2e8f0' }}>
-                  <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Article File / URL
-                  </h3>
-                  {fileHref ? (
-                    <Button
-                      type="link"
-                      icon={<LinkOutlined />}
-                      href={fileHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ padding: 0, fontSize: 13 }}
-                    >
-                      {fileLabel}
-                    </Button>
-                  ) : (
-                    <Text style={{ fontSize: 13, color: '#475569' }}>{fileLabel}</Text>
-                  )}
-                </div>
-              </Col>
-            ) : null}
-          </Row>
-        </div>
-      ) : null}
-    </QcTopDrawerShell>
+          {fileLabel && (
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Article File / URL
+              </h3>
+              {fileHref ? (
+                <Button
+                  type="link"
+                  icon={<LinkOutlined />}
+                  href={fileHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ padding: 0, fontSize: 13 }}
+                >
+                  {fileLabel}
+                </Button>
+              ) : (
+                <Text style={{ fontSize: 13, color: '#475569' }}>{fileLabel}</Text>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </QcDrawerShell>
   )
 }
 
@@ -513,19 +475,23 @@ export function ArticleQcEditDrawer({
   onClose,
   onSave,
 }: ArticleQcEditDrawerProps) {
+  const screens = useBreakpoint()
+  const isMobile = !screens.md
+  const width = isMobile ? '100%' : 560
   const contentTextAreaProps = useContentTextAreaProps()
 
   if (!article) {
     return (
-      <QcTopDrawerShell
+      <QcDrawerShell
         title={`QC — Edit ${mediaLabel} Article`}
         open={open}
+        width={width}
         variant="edit"
         onClose={onClose}
         footer={null}
       >
         {null}
-      </QcTopDrawerShell>
+      </QcDrawerShell>
     )
   }
 
@@ -542,10 +508,11 @@ export function ArticleQcEditDrawer({
         </div>
       }
       open={open}
+      width={width}
       loading={loading}
       onClose={onClose}
       onSave={onSave}
-      alertDescription="Review reference data on the left, then correct title, content, broadcast date, time, and metadata on the right."
+      alertDescription="Review references and update Title, Content, and Broadcast details below."
       heroEyebrow={`${mediaLabel} · Article ${formatArticleIdDisplay(article.article_id)}`}
       heroTitle={article.title}
       metaItems={buildBroadcastMetaItems(article)}
@@ -558,18 +525,7 @@ export function ArticleQcEditDrawer({
             <ArticleMetaDescriptions article={article} />
           </div>
 
-          {article.content?.trim() ? (
-            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Current Content
-              </h3>
-              <Paragraph style={{ fontSize: 13, lineHeight: '1.6', color: '#475569', whiteSpace: 'pre-wrap', margin: 0, maxHeight: 300, overflowY: 'auto' }}>
-                {article.content}
-              </Paragraph>
-            </div>
-          ) : null}
-
-          {article.filee ? (
+          {article.filee && (
             <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
               <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 {fileLabel}
@@ -581,7 +537,7 @@ export function ArticleQcEditDrawer({
               >
                 Your browser does not support the media tag.
               </video>
-              {fileUrl ? (
+              {fileUrl && (
                 <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
                     type="link"
@@ -594,13 +550,13 @@ export function ArticleQcEditDrawer({
                     Open file in new tab
                   </Button>
                 </div>
-              ) : null}
+              )}
             </div>
-          ) : null}
+          )}
         </div>
       }
       formPanel={
-        <Form form={form} layout="vertical" requiredMark="optional" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <Form form={form} layout="vertical" requiredMark="optional" style={{ display: 'flex', flexDirection: 'column', gap: 24, borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
           <div>
             <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
               Article Details
@@ -685,19 +641,23 @@ export function OnlineArticleQcEditDrawer({
   onClose,
   onSave,
 }: OnlineArticleQcEditDrawerProps) {
+  const screens = useBreakpoint()
+  const isMobile = !screens.md
+  const width = isMobile ? '100%' : 560
   const contentTextAreaProps = useContentTextAreaProps()
 
   if (!article) {
     return (
-      <QcTopDrawerShell
+      <QcDrawerShell
         title="QC — Edit Online Article"
         open={open}
+        width={width}
         variant="edit"
         onClose={onClose}
         footer={null}
       >
         {null}
-      </QcTopDrawerShell>
+      </QcDrawerShell>
     )
   }
 
@@ -714,10 +674,11 @@ export function OnlineArticleQcEditDrawer({
         </div>
       }
       open={open}
+      width={width}
       loading={loading}
       onClose={onClose}
       onSave={onSave}
-      alertDescription="Review reference data on the left, then correct title, content, URL, and publication metadata on the right."
+      alertDescription="Review references and update Title, Content, and Publication details below."
       heroEyebrow={`Online · Article ${formatArticleIdDisplay(article.article_id)}`}
       heroTitle={article.title}
       metaItems={buildOnlineMetaItems(article)}
@@ -730,18 +691,7 @@ export function OnlineArticleQcEditDrawer({
             <OnlineArticleMetaDescriptions article={article} />
           </div>
 
-          {article.content?.trim() ? (
-            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Current Content
-              </h3>
-              <Paragraph style={{ fontSize: 13, lineHeight: '1.6', color: '#475569', whiteSpace: 'pre-wrap', margin: 0, maxHeight: 300, overflowY: 'auto' }}>
-                {article.content}
-              </Paragraph>
-            </div>
-          ) : null}
-
-          {fileUrl ? (
+          {fileUrl && (
             <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
               <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Link / File
@@ -757,11 +707,11 @@ export function OnlineArticleQcEditDrawer({
                 {fileUrl}
               </Button>
             </div>
-          ) : null}
+          )}
         </div>
       }
       formPanel={
-        <Form form={form} layout="vertical" requiredMark="optional" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <Form form={form} layout="vertical" requiredMark="optional" style={{ display: 'flex', flexDirection: 'column', gap: 24, borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
           <div>
             <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
               Article Details
