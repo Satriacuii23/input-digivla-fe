@@ -204,9 +204,18 @@ export default function TVUploadPage() {
       }
 
       const metadata = await getVideoUploadMetadata(selectedFile)
-      if (metadata.title) setTitle(metadata.title)
-      if (metadata.time) setTime(metadata.time)
-      if (metadata.duration != null) setDuration(metadata.duration)
+      if (metadata.title) {
+        setTitle((prev) => (prev.trim() ? prev : metadata.title!))
+      }
+      if (metadata.time) {
+        setTime((prev) => (prev.trim() ? prev : metadata.time!))
+      }
+      if (metadata.duration != null) {
+        setDuration((prev) => {
+          const str = String(prev).trim()
+          return str && str !== '0' ? prev : metadata.duration!
+        })
+      }
     },
     [date, selectedMedia],
   )
@@ -222,9 +231,11 @@ export default function TVUploadPage() {
           ...form,
           file: selectedFile,
           filePath: generateFilePath(form.date, form.media_id ? parseInt(form.media_id) : null),
-          ...(metadata.title ? { title: metadata.title } : {}),
-          ...(metadata.time ? { time: metadata.time } : {}),
-          ...(metadata.duration != null ? { duration: metadata.duration } : {}),
+          title: form.title.trim() ? form.title : (metadata.title || form.title),
+          time: form.time.trim() ? form.time : (metadata.time || form.time),
+          duration: (form.duration !== '' && form.duration !== 0 && form.duration !== '0')
+            ? form.duration
+            : (metadata.duration != null ? metadata.duration : form.duration),
         }
       }),
     )
