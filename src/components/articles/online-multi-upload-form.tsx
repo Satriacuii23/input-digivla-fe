@@ -165,13 +165,14 @@ export const OnlineMultiFormCard = memo(function OnlineMultiFormCard({
       }
     >
       <Form layout="vertical" size="middle" className="digivla-online-upload-form digivla-online-upload-multi-form">
-        <Form.Item label="Title" required className="digivla-online-upload-field">
+        <Form.Item label={<span style={{ fontWeight: 500, color: '#334155' }}>Title</span>} required className="digivla-online-upload-field">
           <Input
             placeholder="Judul berita / article title"
             value={values.title}
             onChange={(e) => onFieldChange('title', e.target.value)}
             onKeyDown={handleKeyDown}
             status={hasDuplicate ? 'warning' : undefined}
+            style={{ borderRadius: 6 }}
           />
         </Form.Item>
 
@@ -215,7 +216,7 @@ export const OnlineMultiFormCard = memo(function OnlineMultiFormCard({
 
         <Row gutter={[12, 0]}>
           <Col xs={24} sm={12}>
-            <Form.Item label="Media (Online)" required className="digivla-online-upload-field">
+            <Form.Item label={<span style={{ fontWeight: 500, color: '#334155' }}>Media (Online)</span>} required className="digivla-online-upload-field">
               <Select
                 placeholder="— Please select —"
                 value={values.media_id || undefined}
@@ -223,16 +224,18 @@ export const OnlineMultiFormCard = memo(function OnlineMultiFormCard({
                 options={mediaOptions}
                 showSearch
                 optionFilterProp="label"
+                style={{ borderRadius: 6 }}
               />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
-            <Form.Item label="Journalist" className="digivla-online-upload-field">
+            <Form.Item label={<span style={{ fontWeight: 500, color: '#334155' }}>Journalist</span>} className="digivla-online-upload-field">
               <Input
                 placeholder="Journalist name"
                 value={values.journalist}
                 onChange={(e) => onFieldChange('journalist', e.target.value)}
                 onKeyDown={handleKeyDown}
+                style={{ borderRadius: 6 }}
               />
             </Form.Item>
           </Col>
@@ -245,9 +248,9 @@ export const OnlineMultiFormCard = memo(function OnlineMultiFormCard({
             </div>
           </Col>
           <Col xs={24} sm={8}>
-            <Form.Item label="Pages" className="digivla-online-upload-field">
+            <Form.Item label={<span style={{ fontWeight: 500, color: '#334155' }}>Pages</span>} className="digivla-online-upload-field">
               <InputNumber
-                style={{ width: '100%' }}
+                style={{ width: '100%', borderRadius: 6 }}
                 min={1}
                 placeholder="Halaman"
                 value={values.pages ? Number(values.pages) : undefined}
@@ -257,9 +260,9 @@ export const OnlineMultiFormCard = memo(function OnlineMultiFormCard({
             </Form.Item>
           </Col>
           <Col xs={24} sm={8}>
-            <Form.Item label="MM Column" className="digivla-online-upload-field">
+            <Form.Item label={<span style={{ fontWeight: 500, color: '#334155' }}>MM Column</span>} className="digivla-online-upload-field">
               <InputNumber
-                style={{ width: '100%' }}
+                style={{ width: '100%', borderRadius: 6 }}
                 min={0}
                 step={0.01}
                 placeholder="MM column"
@@ -272,7 +275,7 @@ export const OnlineMultiFormCard = memo(function OnlineMultiFormCard({
         </Row>
 
         <Form.Item
-          label="Article Content"
+          label={<span style={{ fontWeight: 500, color: '#334155' }}>Article Content</span>}
           className="digivla-online-upload-field digivla-online-upload-content-field"
         >
           <div className="digivla-online-upload-editor digivla-online-upload-editor--compact">
@@ -295,6 +298,7 @@ export const OnlineMultiFormCard = memo(function OnlineMultiFormCard({
               value={values.content}
               onChange={(e) => onFieldChange('content', e.target.value)}
               rows={isMobile ? 6 : 8}
+              style={{ borderRadius: 6 }}
             />
             <div className="digivla-online-upload-editor-status">
               <Text type="secondary">Words: {wordCount.toLocaleString()}</Text>

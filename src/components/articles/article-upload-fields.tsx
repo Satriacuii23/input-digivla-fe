@@ -37,7 +37,7 @@ export function UploadDateField({ value, onChange, required }: UploadDateFieldPr
       }
     >
       <DatePicker
-        style={{ width: '100%' }}
+        style={{ width: '100%', borderRadius: 6 }}
         format="DD/MM/YYYY"
         disabledDate={(current) => current && current > dayjs().endOf('day')}
         value={value ? dayjs(value) : null}
@@ -83,13 +83,14 @@ export function UploadTimeAnchorDuration({
             value={journalist}
             onChange={(e) => onJournalistChange(e.target.value)}
             onKeyDown={onKeyDown}
+            style={{ borderRadius: 6 }}
           />
         </Form.Item>
       </Col>
       <Col xs={24} sm={8}>
         <Form.Item label="Duration (seconds)" extra="From video file metadata">
           <InputNumber
-            style={{ width: '100%' }}
+            style={{ width: '100%', borderRadius: 6 }}
             min={0}
             placeholder="e.g. 180"
             value={duration !== '' ? Number(duration) : undefined}
@@ -148,6 +149,7 @@ export function UploadArticleContentFields({
           onChange={(e) => onTitleChange(e.target.value)}
           onKeyDown={onKeyDown}
           status={titleStatus}
+          style={{ borderRadius: 6 }}
         />
       </Form.Item>
       <Form.Item label="Content">
@@ -157,6 +159,7 @@ export function UploadArticleContentFields({
           onChange={(e) => onContentChange(e.target.value)}
           onKeyDown={onKeyDown}
           rows={contentRows}
+          style={{ borderRadius: 6 }}
         />
       </Form.Item>
     </>
@@ -189,6 +192,7 @@ export function UploadOnlineUrlField({ value, onChange, onPaste, onKeyDown }: Up
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
+        style={{ borderRadius: 6 }}
       />
     </Form.Item>
   )
@@ -221,13 +225,14 @@ export function UploadOnlinePublicationFields({
           value={journalist}
           onChange={(e) => onJournalistChange(e.target.value)}
           onKeyDown={onKeyDown}
+          style={{ borderRadius: 6 }}
         />
       </Form.Item>
       <Row gutter={[16, 0]}>
         <Col xs={24} md={12}>
           <Form.Item label="Pages">
             <InputNumber
-              style={{ width: '100%' }}
+              style={{ width: '100%', borderRadius: 6 }}
               min={1}
               placeholder="Number of pages"
               value={pages ? Number(pages) : undefined}
@@ -239,7 +244,7 @@ export function UploadOnlinePublicationFields({
         <Col xs={24} md={12}>
           <Form.Item label="MM Column" style={{ marginBottom: 0 }}>
             <InputNumber
-              style={{ width: '100%' }}
+              style={{ width: '100%', borderRadius: 6 }}
               min={0}
               step={0.01}
               placeholder="MM column size"
@@ -285,6 +290,7 @@ export function UploadContentFieldWithPaste({
         value={content}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
+        style={{ borderRadius: 6 }}
       />
     </Form.Item>
   )
