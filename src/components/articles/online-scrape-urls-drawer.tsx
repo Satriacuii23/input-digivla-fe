@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { Alert, Button, Drawer, Input, Space, Table, Tag, Typography } from 'antd'
+import { Alert, Button, Col, Drawer, Input, Row, Space, Table, Tag, Typography } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { CloseOutlined, LinkOutlined, ThunderboltOutlined } from '@ant-design/icons'
 import { ARTICLE_DRAWER_STYLES } from '@/lib/articles/article-list-helpers'
@@ -45,7 +45,7 @@ export function OnlineScrapeUrlsDrawer({
       dataIndex: 'url',
       ellipsis: true,
       render: (url: string) => (
-        <a href={url} target="_blank" rel="noopener noreferrer" className="digivla-online-scrape-url-link">
+        <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', fontWeight: 500 }}>
           {url}
         </a>
       ),
@@ -92,15 +92,24 @@ export function OnlineScrapeUrlsDrawer({
     {
       title: 'Status',
       dataIndex: 'success',
-      width: 100,
+      width: 90,
       render: (success: boolean) =>
-        success ? <Tag color="success">OK</Tag> : <Tag color="error">Failed</Tag>,
+        success ? (
+          <Tag color="success" style={{ borderRadius: 4, fontWeight: 500 }}>OK</Tag>
+        ) : (
+          <Tag color="error" style={{ borderRadius: 4, fontWeight: 500 }}>Failed</Tag>
+        ),
     },
   ]
 
   return (
     <Drawer
-      title="Scrape Articles from URLs"
+      title={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <ThunderboltOutlined style={{ color: '#eab308' }} />
+          <span style={{ fontWeight: 600, color: '#0f172a', fontSize: 16 }}>Scrape Articles from URLs</span>
+        </div>
+      }
       placement="top"
       open={open}
       onClose={onClose}
@@ -110,16 +119,17 @@ export function OnlineScrapeUrlsDrawer({
       className="digivla-online-scrape-drawer"
       styles={ARTICLE_DRAWER_STYLES}
       footer={
-        <div className="digivla-drawer-footer digivla-online-scrape-drawer-footer">
+        <div className="digivla-drawer-footer" style={{ display: 'flex', justifyContent: 'space-between', gap: 16, borderTop: '1px solid #f1f5f9', padding: '16px 24px' }}>
           <Button icon={<CloseOutlined />} onClick={onClose} disabled={loading}>
             Close
           </Button>
-          <Space wrap>
+          <Space wrap size={12}>
             <Button
               icon={<ThunderboltOutlined />}
               loading={loading}
               onClick={onScrape}
               disabled={parsedUrls.length === 0}
+              style={{ borderRadius: 6 }}
             >
               Scrape {parsedUrls.length > 0 ? `(${parsedUrls.length})` : ''}
             </Button>
@@ -127,6 +137,7 @@ export function OnlineScrapeUrlsDrawer({
               type="primary"
               onClick={onApply}
               disabled={loading || successCount === 0}
+              style={{ minWidth: 180, borderRadius: 6 }}
             >
               Fill Multi Upload ({successCount})
             </Button>
@@ -134,47 +145,92 @@ export function OnlineScrapeUrlsDrawer({
         </div>
       }
     >
-      <div className="digivla-online-scrape-drawer-body">
-        <Text type="secondary" className="digivla-online-scrape-desc">
-          Paste article URLs (one per line). The system will fetch each page and auto-fill title, content,
-          journalist, date, media, pages, MM column, and URL into Multi Upload forms.
-        </Text>
+      <div className="digivla-online-scrape-drawer-body" style={{ padding: '4px 0' }}>
+        <Row gutter={[24, 24]}>
+          {/* Left Column: Instructions and Inputs */}
+          <Col xs={24} lg={8} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <Text type="secondary" style={{ display: 'block', fontSize: 13, lineHeight: 1.5, color: '#64748b', marginBottom: 12 }}>
+                Paste article URLs (one per line). The system will fetch each page and auto-fill title, content,
+                journalist, date, media, pages, MM column, and URL into Multi Upload forms.
+              </Text>
 
-        <Alert
-          type="info"
-          showIcon
-          className="digivla-online-scrape-alert"
-          title={`Max ${MAX_MULTI_UPLOAD_ARTICLES} URLs per scrape · ${parsedUrls.length} detected`}
-          description="URLs are crawled one at a time with live progress. Media is matched from the article domain — review fields before uploading."
-        />
+              <Alert
+                type="info"
+                showIcon
+                title={`Max ${MAX_MULTI_UPLOAD_ARTICLES} URLs per scrape`}
+                description={
+                  <span style={{ fontSize: 12, lineHeight: 1.4, display: 'block', marginTop: 2 }}>
+                    URLs are crawled one by one with live progress. Currently <strong>{parsedUrls.length}</strong> URL(s) detected.
+                  </span>
+                }
+                style={{ borderRadius: 8, background: '#eff6ff', border: '1px solid #bfdbfe' }}
+              />
+            </div>
 
-        <OnlineScrapeProgress progress={progress} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <Text style={{ fontSize: 13, fontWeight: 600, color: '#475569', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <LinkOutlined /> Article URLs
+              </Text>
+              <TextArea
+                value={urlText}
+                onChange={(e) => onUrlTextChange(e.target.value)}
+                placeholder={'https://example.com/article-1\nhttps://example.com/article-2'}
+                rows={12}
+                disabled={loading}
+                style={{ borderRadius: 6, fontFamily: 'monospace', fontSize: 12 }}
+              />
+            </div>
+          </Col>
 
-        <div className="digivla-online-scrape-input-wrap">
-          <Text className="digivla-online-scrape-input-label">
-            <LinkOutlined /> Article URLs
-          </Text>
-          <TextArea
-            value={urlText}
-            onChange={(e) => onUrlTextChange(e.target.value)}
-            placeholder={'https://example.com/article-1\nhttps://example.com/article-2'}
-            rows={8}
-            disabled={loading}
-            className="digivla-online-scrape-textarea"
-          />
-        </div>
+          {/* Right Column: Live Progress & Results Table */}
+          <Col xs={24} lg={16} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* Live Progress Bar */}
+            <OnlineScrapeProgress progress={progress} />
 
-        {results && results.length > 0 && (
-          <Table<OnlineArticleScrapeResultItem>
-            rowKey={(row) => row.url}
-            size="small"
-            className="digivla-data-table digivla-online-scrape-table"
-            columns={columns}
-            dataSource={results}
-            pagination={false}
-            scroll={{ x: 700, y: loading ? 'calc(85vh - 520px)' : 'calc(85vh - 420px)' }}
-          />
-        )}
+            {/* Empty State */}
+            {!results && progress.status === 'idle' && (
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '60px 20px',
+                border: '2px dashed #cbd5e1',
+                borderRadius: 8,
+                background: '#f8fafc',
+                color: '#64748b',
+                minHeight: 280,
+                textAlign: 'center'
+              }}>
+                <ThunderboltOutlined style={{ fontSize: 36, color: '#94a3b8', marginBottom: 12 }} />
+                <div style={{ fontWeight: 600, fontSize: 14, color: '#475569' }}>No Active Scrape Session</div>
+                <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 4, maxWidth: 320 }}>
+                  Enter article URLs on the left panel and click "Scrape" to start pulling articles in real time.
+                </div>
+              </div>
+            )}
+
+            {/* Results Table */}
+            {results && results.length > 0 && (
+              <div>
+                <h3 style={{ fontSize: 13, fontWeight: 600, color: '#475569', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Scrape Results
+                </h3>
+                <Table<OnlineArticleScrapeResultItem>
+                  rowKey={(row) => row.url}
+                  size="small"
+                  className="digivla-data-table digivla-online-scrape-table"
+                  columns={columns}
+                  dataSource={results}
+                  pagination={false}
+                  scroll={{ x: 700, y: 'calc(85vh - 350px)' }}
+                  style={{ background: '#fff', border: '1px solid #f1f5f9', borderRadius: 8, overflow: 'hidden' }}
+                />
+              </div>
+            )}
+          </Col>
+        </Row>
       </div>
     </Drawer>
   )
