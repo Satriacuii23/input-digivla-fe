@@ -1,4 +1,4 @@
-export const MAX_MULTI_UPLOAD_ARTICLES = 50
+export const MAX_MULTI_UPLOAD_ARTICLES = 250
 
 export function canAddMoreMultiUploadArticles(articleCount: number): boolean {
   return articleCount < MAX_MULTI_UPLOAD_ARTICLES
