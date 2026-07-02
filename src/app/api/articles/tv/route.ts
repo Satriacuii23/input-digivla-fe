@@ -68,6 +68,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
+    console.log("DEBUG FRONTEND: POSTing TV article to:", `${API_URL}/api/articles/tv`)
     const res = await fetch(`${API_URL}/api/articles/tv`, {
       method: 'POST',
       headers: {

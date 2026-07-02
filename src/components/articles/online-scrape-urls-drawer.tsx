@@ -218,7 +218,7 @@ export function OnlineScrapeUrlsDrawer({
                   Scrape Results
                 </h3>
                 <Table<OnlineArticleScrapeResultItem>
-                  rowKey={(row) => row.url}
+                  rowKey={(row, index) => `${row.url}-${index}`}
                   size="small"
                   className="digivla-data-table digivla-online-scrape-table"
                   columns={columns}
