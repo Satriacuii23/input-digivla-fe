@@ -3196,7 +3196,8 @@ a {
   .digivla-toolbar-select,
   .digivla-toolbar-select-sm,
   .digivla-toolbar-datepicker {
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .digivla-toolbar-reset {
@@ -3206,11 +3207,30 @@ a {
   .digivla-toolbar-actions {
     width: 100%;
     margin-left: 0;
-    justify-content: flex-end;
+    justify-content: space-between;
+  }
+
+  .digivla-toolbar-actions .ant-btn {
+    flex: 1;
   }
 
   .digivla-table-toolbar .ant-btn:not(.digivla-toolbar-icon-btn) {
     width: 100%;
+  }
+  
+  .digivla-page-card .ant-card-body,
+  .digivla-article-list-card .ant-card-body,
+  .digivla-list-table-card .ant-card-body {
+    padding: 12px 10px !important;
+  }
+  
+  .digivla-media-add-tabs .ant-tabs-nav-list {
+    width: 100%;
+  }
+  
+  .digivla-media-add-tabs .ant-tabs-tab {
+    flex: 1;
+    justify-content: center;
   }
 }
 
