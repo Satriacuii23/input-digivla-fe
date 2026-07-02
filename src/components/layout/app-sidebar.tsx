@@ -195,7 +195,7 @@ export function AppMain({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background lg:pl-64">
       <div className="pt-14 lg:pt-0">
-        <main className="mx-auto max-w-[1400px] p-4 sm:p-6 lg:p-8">
+        <main className="mx-auto w-full max-w-[1400px] overflow-x-hidden p-4 sm:p-6 lg:p-8">
           <PageBreadcrumb />
           {children}
         </main>
