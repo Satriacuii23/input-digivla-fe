@@ -214,21 +214,24 @@ export const OnlineMultiFormCard = memo(function OnlineMultiFormCard({
           />
         )}
 
-        <Row gutter={[12, 0]}>
-          <Col xs={24} sm={12}>
-            <Form.Item label={<span style={{ fontWeight: 500, color: '#334155' }}>Media (Online)</span>} required className="digivla-online-upload-field">
-              <Select
-                placeholder="— Please select —"
-                value={values.media_id || undefined}
-                onChange={(v) => onFieldChange('media_id', v || null)}
-                options={mediaOptions}
-                showSearch
-                optionFilterProp="label"
-                style={{ borderRadius: 6 }}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
+        <Form.Item label={<span style={{ fontWeight: 500, color: '#334155' }}>Media (Online)</span>} required className="digivla-online-upload-field">
+          <Select
+            placeholder="— Please select —"
+            value={values.media_id || undefined}
+            onChange={(v) => onFieldChange('media_id', v || null)}
+            options={mediaOptions}
+            showSearch
+            optionFilterProp="label"
+            style={{ borderRadius: 6 }}
+          />
+        </Form.Item>
+
+        <div className="digivla-online-upload-field">
+          <UploadDateField value={values.date} onChange={(d) => onFieldChange('date', d)} required />
+        </div>
+
+        <Row gutter={[16, 0]}>
+          <Col xs={24} sm={8}>
             <Form.Item label={<span style={{ fontWeight: 500, color: '#334155' }}>Journalist</span>} className="digivla-online-upload-field">
               <Input
                 placeholder="Journalist name"
@@ -238,14 +241,6 @@ export const OnlineMultiFormCard = memo(function OnlineMultiFormCard({
                 style={{ borderRadius: 6 }}
               />
             </Form.Item>
-          </Col>
-        </Row>
-
-        <Row gutter={[12, 0]}>
-          <Col xs={24} sm={8}>
-            <div className="digivla-online-upload-field">
-              <UploadDateField value={values.date} onChange={(d) => onFieldChange('date', d)} required />
-            </div>
           </Col>
           <Col xs={24} sm={8}>
             <Form.Item label={<span style={{ fontWeight: 500, color: '#334155' }}>Pages</span>} className="digivla-online-upload-field">
