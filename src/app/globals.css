@@ -23,6 +23,9 @@ a {
 
 .digivla-main-layout {
   transition: margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 .digivla-main-content {
@@ -37,6 +40,8 @@ a {
 @media (max-width: 991px) {
   .digivla-main-content {
     padding: 56px 16px 16px;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 }
 
@@ -737,6 +742,8 @@ a {
 .digivla-page-card {
   box-shadow: 0 1px 4px rgba(15, 32, 53, 0.06) !important;
   border-radius: 12px !important;
+  width: 100%;
+  max-width: 100%;
 }
 
 .digivla-tools-placeholder {
@@ -3192,6 +3199,10 @@ a {
     align-items: stretch;
   }
 
+  .digivla-toolbar-search {
+    flex: none !important;
+  }
+
   .digivla-toolbar-search,
   .digivla-toolbar-select,
   .digivla-toolbar-select-sm,
@@ -3216,6 +3227,15 @@ a {
 
   .digivla-table-toolbar .ant-btn:not(.digivla-toolbar-icon-btn) {
     width: 100%;
+  }
+
+  .digivla-page-header-extra {
+    width: 100% !important;
+  }
+
+  .digivla-page-header-extra > a,
+  .digivla-page-header-extra .ant-btn {
+    width: 100% !important;
   }
   
   .digivla-page-card .ant-card-body,

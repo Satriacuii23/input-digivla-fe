@@ -34,7 +34,7 @@ export function PageHeader({ title, description, extra, breadcrumb }: PageHeader
             </Text>
           )}
         </div>
-        {extra && <div className="flex flex-wrap gap-2 w-full sm:w-auto">{extra}</div>}
+        {extra && <div className="digivla-page-header-extra flex flex-wrap gap-2 w-full sm:w-auto">{extra}</div>}
       </div>
     </div>
   )

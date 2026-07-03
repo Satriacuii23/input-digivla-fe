@@ -279,15 +279,9 @@ export default function MediaListPage() {
         breadcrumb={[{ title: 'Home', href: '/dashboard' }, { title: 'Media List' }]}
         extra={
           <Link href="/media/add">
-            {isMobile ? (
-              <Tooltip title="Add Media">
-                <Button type="primary" icon={<PlusOutlined />} aria-label="Add Media" />
-              </Tooltip>
-            ) : (
-              <Button type="primary" icon={<PlusOutlined />}>
-                Add Media
-              </Button>
-            )}
+            <Button type="primary" icon={<PlusOutlined />}>
+              Add Media
+            </Button>
           </Link>
         }
       />
